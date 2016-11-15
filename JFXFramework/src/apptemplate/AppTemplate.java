@@ -26,10 +26,10 @@ import static settings.InitializationParameters.*;
  */
 public abstract class AppTemplate extends Application {
 
-    private final PropertyManager propertyManager = PropertyManager.getManager();
-    private AppDataComponent      dataComponent; // to manage the app's data
-    private AppFileComponent      fileComponent; // to manage the app's file I/O
-    private AppWorkspaceComponent workspaceComponent; // to manage the app's GUI workspace
+    protected final PropertyManager propertyManager = PropertyManager.getManager();
+    protected AppDataComponent      dataComponent; // to manage the app's data
+    protected AppFileComponent      fileComponent; // to manage the app's file I/O
+    protected AppWorkspaceComponent workspaceComponent; // to manage the app's GUI workspace
     private AppGUI                gui;
 
 //    private FileController        controller;

@@ -54,8 +54,8 @@ public class AppGUI implements AppStyleArbiter {
     protected Button         exitButton;       // button to exit application
     protected String         applicationTitle; // the application title
 
-    private int appSpecificWindowWidth;  // optional parameter for window width that can be set by the application
-    private int appSpecificWindowHeight; // optional parameter for window height that can be set by the application
+    protected int appSpecificWindowWidth;  // optional parameter for window width that can be set by the application
+    protected int appSpecificWindowHeight; // optional parameter for window height that can be set by the application
 
     public AppGUI() {
     }
@@ -120,7 +120,7 @@ public class AppGUI implements AppStyleArbiter {
      * This function initializes all the buttons in the toolbar at the top of
      * the application window. These are related to file management.
      */
-    private void initializeToolbar() throws IOException {
+    protected void initializeToolbar() throws IOException {
         toolbarPane = new FlowPane();
         newButton = initializeChildButton(toolbarPane, NEW_ICON.toString(), NEW_TOOLTIP.toString(), false);
         loadButton = initializeChildButton(toolbarPane, LOAD_ICON.toString(), LOAD_TOOLTIP.toString(), false);
@@ -128,7 +128,7 @@ public class AppGUI implements AppStyleArbiter {
         exitButton = initializeChildButton(toolbarPane, EXIT_ICON.toString(), EXIT_TOOLTIP.toString(), false);
     }
 
-    private void initializeToolbarHandlers(AppTemplate app) throws InstantiationException {
+    protected void initializeToolbarHandlers(AppTemplate app) throws InstantiationException {
         try {
             Method         getFileControllerClassMethod = app.getClass().getMethod("getFileControllerClass");
             String         fileControllerClassName      = (String) getFileControllerClassMethod.invoke(app);
@@ -168,7 +168,7 @@ public class AppGUI implements AppStyleArbiter {
     // INITIALIZE THE WINDOW (i.e. STAGE) PUTTING ALL THE CONTROLS
     // THERE EXCEPT THE WORKSPACE, WHICH WILL BE ADDED THE FIRST
     // TIME A NEW Page IS CREATED OR LOADED
-    private void initializeWindow() throws IOException {
+    protected void initializeWindow() throws IOException {
         PropertyManager propertyManager = PropertyManager.getManager();
 
         // SET THE WINDOW TITLE

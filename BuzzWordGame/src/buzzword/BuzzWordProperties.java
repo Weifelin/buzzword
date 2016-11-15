@@ -3,5 +3,22 @@ package buzzword;
 /**
  * Created by Red on 11/13/16.
  */
-public class BuzzWordProperties {
+public enum BuzzWordProperties {
+    WORKSPACE_HEADING_LABEL,
+    ROOT_BORDERPANE_ID,
+    TOP_TOOLBAR_ID,
+    SEGMENTED_BUTTON_BAR,
+    FIRST_TOOLBAR_BUTTON,
+    LAST_TOOLBAR_BUTTON,
+    GOOD_AND_BAD_GUESSES_LABEL,
+    HEADING_LABEL,
+    CREATE_NEW_PROFILE_BUTTON,
+    LOGIN,
+    SELECT_MODE,
+    START_PLAYING,
+    HOME,
+    ENG_DIC,
+    PLACES,
+    SCIENCE,
+    FAMOUS_PEOPLE
 }

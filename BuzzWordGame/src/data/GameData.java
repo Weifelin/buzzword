@@ -8,12 +8,14 @@ import java.util.ArrayList;
 import java.util.Set;
 
 /**
- * Created by Red on 11/13/16.
+ * Created by Weifeng Lin on 11/13/16.
+ * @author Weifeng Lin
  */
+
 public class GameData implements AppDataComponent {
     private static final int TOTAL_NUMBER_OF_STORED_WORDS    = 330622;
 
-    private GameMode                    mode;
+    private ArrayList<GameMode>         modes;
     private String                      wordTry;
     private int                         totalPoints;
     private int                         targetPoints;
@@ -50,6 +52,9 @@ public class GameData implements AppDataComponent {
         this.user = new User(initName, initPW, this);
     }
 
+    public User getUser(){
+        return user;
+    }
     public void reset(){
 
     }

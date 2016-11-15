@@ -7,8 +7,10 @@ import java.io.IOException;
 import java.nio.file.Path;
 
 /**
- * Created by Red on 11/13/16.
+ * Created by Weifeng Lin on 11/13/16.
+ * @author Weifeng Lin
  */
+
 public class GameDataFile implements AppFileComponent {
 
     @Override
