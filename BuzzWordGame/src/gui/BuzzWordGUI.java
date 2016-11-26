@@ -5,6 +5,7 @@ import buzzword.BuzzWord;
 import controller.BuzzWordController;
 import controller.FileController;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
@@ -13,11 +14,13 @@ import javafx.scene.control.*;
 import javafx.scene.effect.Effect;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
+import javafx.scene.text.TextAlignment;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -35,6 +38,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Map;
 
 import static buzzword.BuzzWordProperties.ROOT_BORDERPANE_ID;
 import static settings.AppPropertyType.*;
@@ -61,6 +65,8 @@ public class BuzzWordGUI extends AppGUI {
     HBox                        buttom;
     BorderPane                  heading;
     VBox                        buttonlist;
+    private double x = 0;
+    private double y = 0;
 
 
 
@@ -157,6 +163,9 @@ public class BuzzWordGUI extends AppGUI {
                 e.printStackTrace();
             }
         });
+        logoutButton.setOnAction(event -> {
+            buzzWordController.handleLogoutRequest();
+        });
 
         modesList[0].setOnAction(event -> buzzWordController.handleMode0(modesList[0].getText()));
         modesList[1].setOnAction(event -> buzzWordController.handleMode1(modesList[1].getText()));
@@ -188,11 +197,17 @@ public class BuzzWordGUI extends AppGUI {
         Screen screen = Screen.getPrimary();
         Rectangle2D bounds = screen.getVisualBounds();
 
+
         // AND USE IT TO SIZE THE WINDOW
-        primaryStage.setX(bounds.getMinX());
-        primaryStage.setY(bounds.getMinY());
-        primaryStage.setWidth(bounds.getWidth());
-        primaryStage.setHeight(bounds.getHeight());
+        primaryStage.setX((bounds.getMaxX()-bounds.getMinX())/8);
+        primaryStage.setY((bounds.getMaxY()-bounds.getMinY())/8);
+//        primaryStage.setWidth(bounds.getWidth());
+//        primaryStage.setHeight(bounds.getHeight());
+        primaryStage.setResizable(true);
+        primaryStage.setWidth(1000);
+        primaryStage.setHeight(720);
+        primaryStage.setMinHeight(720);
+        primaryStage.setMinWidth(1000);
 
         // ADD THE TOOLBAR ONLY, NOTE THAT THE WORKSPACE
         // HAS BEEN CONSTRUCTED, BUT WON'T BE ADDED UNTIL
@@ -223,6 +238,8 @@ public class BuzzWordGUI extends AppGUI {
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
+
+
 
         primaryStage.setScene(primaryScene);
         primaryStage.show();
@@ -264,6 +281,7 @@ public class BuzzWordGUI extends AppGUI {
 //        button.setShape(rectangle);
         //button.getStyleClass().setAll(propertyManager.getPropertyValue(BUTTON_COLOR));
         button.getStyleClass().setAll(propertyManager.getPropertyValue(TEXT_LABEL));
+        button.setTextAlignment(TextAlignment.CENTER);
         button.setStyle("-fx-pref-height: 40px; -fx-pref-width: 200px; -fx-background-color: rgb(183, 187, 191); -fx-background-radius: 6,5;" );
 
 

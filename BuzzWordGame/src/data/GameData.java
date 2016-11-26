@@ -64,4 +64,7 @@ public class GameData implements AppDataComponent {
     }
 
 
+    public void setUser(User user) {
+        this.user = user;
+    }
 }

@@ -1,6 +1,7 @@
 package data;
 
 
+import components.AppDataComponent;
 
 /**
  * Created by Weifeng Lin on 11/13/16.
@@ -8,7 +9,7 @@ package data;
  */
 
 
-public class User {
+public class User implements AppDataComponent {
     private static int userIDcount = 0;
 
     private int         userID;
@@ -30,5 +31,18 @@ public class User {
         return userName;
     }
 
+    public GameData getGameData() {
+        return gameData;
+    }
 
+    public void setGameData(GameData gameData){
+        this.gameData = gameData;
+    }
+
+
+    @Override
+    public void reset() {
+
+    }
 }
+

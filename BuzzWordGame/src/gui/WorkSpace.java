@@ -91,7 +91,9 @@ public class WorkSpace extends AppWorkspaceComponent{
         workBox.getChildren().setAll(modeName, workArea, levelName, startAndPauseButtonBox);
         //workBox.getChildren().set(1, workArea);
 
+
         bodyPane.setCenter(workBox);
+
         workBox.setAlignment(Pos.CENTER);
 
 
@@ -132,8 +134,8 @@ public class WorkSpace extends AppWorkspaceComponent{
         newProfile.setVisible(false);
         login.setVisible(false);
 
-        //logout.setText(user.getUserName());
-        logout.setText("UserName");
+        logout.setText(user.getUserName());
+        //logout.setText("UserName");
         selectMode.setVisible(true);
         start.setVisible(true);
         logout.setVisible(true);
@@ -165,8 +167,15 @@ public class WorkSpace extends AppWorkspaceComponent{
 
     public void reinitializeAfterLevelSelection(Level level){
 
+
+        workArea.setAlignment(Pos.CENTER);
+        modeName.setAlignment(Pos.CENTER);
+        levelName.setAlignment(Pos.CENTER);
+        startAndPauseButtonBox.setAlignment(Pos.CENTER);
+
         workBox.getChildren().set(2, level.getLabel());
         workBox.getChildren().get(3).setVisible(true);
+
 
         for (int i=0; i<circles.length;i++){
             circles[i].setVisible(true);

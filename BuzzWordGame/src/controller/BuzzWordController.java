@@ -3,7 +3,10 @@ package controller;
 import buzzword.BuzzWord;
 import data.GameData;
 import data.GameMode;
+import data.User;
 import gui.WorkSpace;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -13,13 +16,22 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Text;
+import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import propertymanager.PropertyManager;
+import ui.AppMessageDialogSingleton;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
+import static settings.AppPropertyType.SAVE_ERROR_MESSAGE;
+import static settings.AppPropertyType.SAVE_ERROR_TITLE;
+import static settings.InitializationParameters.APP_WORKDIR_PATH;
 
 /**
  * Created by Weifeng Lin on 11/13/16.
@@ -34,7 +46,8 @@ public class BuzzWordController implements FileController {
     private Text[]              letters;
     private Circle[]            circles;
     private Line[]              lines;
-    private DropShadow          effect;  //usded to setHightlight of shapes.
+    private DropShadow          effect;  //usded to setHightlight of shapes
+    private User                user;
 
 
     private boolean             success;
@@ -212,8 +225,8 @@ public class BuzzWordController implements FileController {
 
 
 
-        String name = username.getText();
-        String pw = passwordField.getText();
+
+
 
         createUser.getChildren().setAll(vBox);
         Scene scene = new Scene(createUser, 300,200, Color.LIGHTGRAY);
@@ -227,6 +240,7 @@ public class BuzzWordController implements FileController {
         stage.initModality(Modality.WINDOW_MODAL);
         stage.initStyle(StageStyle.UNDECORATED);
 
+        stage.show();
 
 
 //        Dialog dialog = new Dialog();
@@ -234,23 +248,41 @@ public class BuzzWordController implements FileController {
 //        dialog.initOwner(buzzWord.getGUI().getWindow());
 //        dialog.initModality(Modality.WINDOW_MODAL);
 //        dialog.showAndWait();
+//        final String name = username.getText();
+//        final String pw = passwordField.getText();
+        Text name = new Text(username.getText());
+        Text pw = new Text(passwordField.getText());
+
         cancel.setOnAction(event -> {
             stage.close();
         });
+
+
         create.setOnAction(event -> {
-            if (name.length()==0 || pw.length()==0){
+            name.setText(username.getText());
+            pw.setText(passwordField.getText());
+            if (name.getText().length()==0 || pw.getText().length()==0){
                 wrong.setVisible(true);
             }else {
                 wrong.setVisible(false);
-                gameData.setUser(name,pw);
+                user = new User(name.getText(), pw.getText(), gameData);
+                gameData.setUser(user);
+                //gameData.setUser(name,pw);
                 stage.close();
+                WorkSpace w = (WorkSpace) buzzWord.getWorkspaceComponent();
+                w.reinitializeAfterLogin(user);
             }
 
         });
 
-        stage.showAndWait();
-        WorkSpace workSpace = (WorkSpace) buzzWord.getWorkspaceComponent();
-        workSpace.reinitializeAfterLogin(gameData.getUser());
+        //stage.showAndWait();
+
+        //WorkSpace workSpace = (WorkSpace) buzzWord.getWorkspaceComponent();
+        //workSpace.reinitializeAfterLogin(gameData.getUser());
+
+    }
+
+    public void handleLogoutRequest() { //will save data
 
     }
 
@@ -287,6 +319,20 @@ public class BuzzWordController implements FileController {
     }
 
     private void save(File target){
+        try {
+            FileChooser fc = new FileChooser();
+            URL workDirtURL = BuzzWord.class.getClassLoader().getResource(APP_WORKDIR_PATH.getParameter());
+            File initialDir = new File(workDirtURL.getFile());
+            fc.setInitialDirectory(initialDir);
+            fc.setInitialFileName(user.getUserName()+".json");
+            File selectedFile = fc.getInitialDirectory();
+            buzzWord.getFileComponent().saveData(user, Paths.get(selectedFile.getAbsolutePath()));
+
+        } catch (Exception e){
+            AppMessageDialogSingleton dialogSingleton = AppMessageDialogSingleton.getSingleton();
+            dialogSingleton.show(propertyManager.getPropertyValue(SAVE_ERROR_TITLE), propertyManager.getPropertyValue(SAVE_ERROR_MESSAGE));
+        }
+
 
     }
 

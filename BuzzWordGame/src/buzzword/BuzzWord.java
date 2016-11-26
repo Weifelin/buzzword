@@ -28,7 +28,7 @@ import static settings.InitializationParameters.WORKSPACE_PROPERTIES_XML;
 public class BuzzWord extends AppTemplate {
 
     BuzzWordGUI gui;
-
+    GameDataFile gamedataFile =  new GameDataFile();
 
 
 
@@ -84,6 +84,7 @@ public class BuzzWord extends AppTemplate {
                         : new BuzzWordGUI(primaryStage, propertyManager.getPropertyValue(APP_TITLE.toString()), this);
                 workspaceComponent = builder.buildWorkspaceComponent();
                 initStylesheet();
+                //initStylesheet(primaryStage);
                 gui.initStyle();
                 workspaceComponent.initStyle();
             }
@@ -93,6 +94,14 @@ public class BuzzWord extends AppTemplate {
                     propertyManager.getPropertyValue(PROPERTIES_LOAD_ERROR_MESSAGE.toString()));
         }
     }
+
+//    private void initStylesheet(Stage primaryStage) {
+//        primaryStage.setResizable(true);
+//        primaryStage.setWidth(1000);
+//        primaryStage.setHeight(720);
+//        primaryStage.setMinHeight(720);
+//        primaryStage.setMinWidth(1000);
+//    }
 
     @Override
     public void initStylesheet() {
@@ -107,4 +116,6 @@ public class BuzzWord extends AppTemplate {
     public static void main(String[] args) {
         launch(args);
     }
+
+
 }
