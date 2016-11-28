@@ -4,10 +4,7 @@ package gui;
 import buzzword.BuzzWord;
 import components.AppWorkspaceComponent;
 import controller.BuzzWordController;
-import data.GameMode;
-import data.Level;
-import data.User;
-import data.Word;
+import data.*;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -226,13 +223,22 @@ public class WorkSpace extends AppWorkspaceComponent{
         for (int i=0; i<texts.length; i++){
             if (i<levels.length){
                 texts[i].setText(String.valueOf(i+1));
-                Level level = levels[i];
-                circles[i].setOnMouseClicked(event -> reinitializeAfterLevelSelection(level));
+                //Level level = levels[i];
+                //circles[i].setOnMouseClicked(event -> reinitializeAfterLevelSelection(level));
             } else {
                 circles[i].setVisible(false);
                 texts[i].setVisible(false);
             }
         }
+
+        int levelPassed = mode.getLevelPassed();
+
+        for (int i=0; i<=levelPassed; i++){
+            circles[i].setFill(Color.AQUA);
+            Level level = levels[i];
+            circles[i].setOnMouseClicked(event -> reinitializeAfterLevelSelection(level));
+        }
+
 
     }
 
@@ -255,6 +261,8 @@ public class WorkSpace extends AppWorkspaceComponent{
             texts[i].setVisible(false);
             textsWords[i].setVisible(true);
             Circle circle = circles[i];
+            circles[i].setFill(Color.GRAY);
+
             circles[i].setOnMouseClicked(event -> hightlight(circle));
         }
 

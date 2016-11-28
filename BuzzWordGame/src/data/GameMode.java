@@ -10,13 +10,14 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 import java.util.stream.Stream;
 
 import static buzzword.BuzzWordProperties.HEADING_LABEL;
-import static data.GameData.TOTAL_NUMBER_OF_STORED_WORDS;
+
 
 /**
  * Created by Weifeng Lin on 11/13/16.
@@ -33,7 +34,7 @@ public class GameMode {
     private GameData data;
     private Level[] levels;
     private Set<String> wordsSet;
-
+    private int levelPassed;
 
     private PropertyManager propertyManager = PropertyManager.getManager();
 
@@ -48,7 +49,9 @@ public class GameMode {
             levels[i] = new Level(this, i);
         }
         setWords(modeName);
+        levelPassed =0;
     }
+    public GameMode(){}
 
     private void setWords(String modename) {
         wordsSet = new HashSet<>(WORD_SET_SIZE);
@@ -63,10 +66,12 @@ public class GameMode {
                 try (Stream<String> lines = Files.lines(Paths.get(wordsResource.toURI()))) {
 
                     potentialTarget = lines.skip(toSkip).findFirst().get();
+
                     while (!isWord(potentialTarget)) {
                         //toSkip = new Random().nextInt(TOTAL_NUMBER_OF_STORED_WORDS);
                         toSkip++;
-                        potentialTarget = lines.skip(toSkip).findFirst().get();
+                        Stream<String> linesII = Files.lines(Paths.get(wordsResource.toURI()));
+                        potentialTarget = linesII.skip(toSkip).findFirst().get();
                     }
                     wordsSet.add(potentialTarget);
                     toSkip++;
@@ -101,7 +106,7 @@ public class GameMode {
 
         for (int i=0; i<potentialTarget.length();i++){
             int asciiCode = (int) potentialTarget.charAt(i);
-            if (asciiCode<65 || asciiCode>122){
+            if ((asciiCode<65 && asciiCode != 32 ) || asciiCode>122){
                 return false;
             }else if (asciiCode > 90 && asciiCode < 97){
                 return false;
@@ -109,5 +114,13 @@ public class GameMode {
         }
 
         return true;
+    }
+
+    public int getLevelPassed() {
+        return levelPassed;
+    }
+
+    public void setLevelPassed(int levelPassed) {
+        this.levelPassed = levelPassed;
     }
 }

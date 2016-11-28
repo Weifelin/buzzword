@@ -30,6 +30,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
+import java.util.ArrayList;
 
 import static settings.AppPropertyType.*;
 import static settings.InitializationParameters.APP_WORKDIR_PATH;
@@ -325,31 +326,43 @@ public class BuzzWordController implements FileController {
 
     public void handleMode0(String mode){
         GameMode gameMode = new GameMode(mode, gameData);
+        //gameData.getModes().set(0, gameMode);
+        gameData.setMode(0, gameMode);
+        //gameData.getModes()[0] = gameMode;
         WorkSpace workSpace = (WorkSpace) buzzWord.getWorkspaceComponent();
         workSpace.reinitializeAfterModeSelection(gameMode);
-        gameData.getModes().set(0, gameMode);
+
     }
 
     public void handleMode1(String mode){
         GameMode gameMode = new GameMode(mode, gameData);
+        //gameData.getModes().set(1, gameMode);
+        //gameData.getModes()[1] = gameMode;
+        gameData.setMode(1, gameMode);
         WorkSpace workSpace = (WorkSpace) buzzWord.getWorkspaceComponent();
         workSpace.reinitializeAfterModeSelection(gameMode);
-        gameData.getModes().set(1, gameMode);
+
 
     }
 
     public void handleMode2(String mode){
         GameMode gameMode = new GameMode(mode, gameData);
+        //gameData.getModes().set(2, gameMode);
+        //gameData.getModes()[2] = gameMode;
+        gameData.setMode(2, gameMode);
         WorkSpace workSpace = (WorkSpace) buzzWord.getWorkspaceComponent();
         workSpace.reinitializeAfterModeSelection(gameMode);
-        gameData.getModes().set(2, gameMode);
+
     }
 
     public void handleMode3(String mode){
         GameMode gameMode = new GameMode(mode, gameData);
+        //gameData.getModes().set(3, gameMode);
+        //gameData.getModes()[3] = gameMode;
+        gameData.setMode(3, gameMode);
         WorkSpace workSpace = (WorkSpace) buzzWord.getWorkspaceComponent();
         workSpace.reinitializeAfterModeSelection(gameMode);
-        gameData.getModes().set(3, gameMode);
+
     }
 
 
@@ -403,6 +416,8 @@ public class BuzzWordController implements FileController {
     private void resetData(User data){
         this.user = data;
         this.gameData = user.getGameData();
+
+
         buzzWord.setDataComponent(user);
     }
 

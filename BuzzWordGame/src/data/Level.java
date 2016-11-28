@@ -22,9 +22,9 @@ public class Level {
 
     private PropertyManager propertyManager = PropertyManager.getManager();
 
-    public Level(GameMode mode, int level){
+    public Level(GameMode mode, int targetlevel){
         this.mode = mode;
-        this.level = level+1;
+        this.level = targetlevel+1;
         label = new Label("Level "+level);
         label.getStyleClass().setAll(propertyManager.getPropertyValue(HEADING_LABEL));
         label.setAlignment(Pos.CENTER);

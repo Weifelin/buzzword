@@ -2,9 +2,11 @@ package data;
 
 import buzzword.BuzzWord;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import components.AppDataComponent;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -16,7 +18,8 @@ public class GameData implements AppDataComponent {
     private static final int TOTAL_NUMBER_OF_STORED_WORDS    = 330622;
 
 
-    private ArrayList<GameMode>         modes;
+    @JsonInclude
+    private ArrayList<GameMode>  modes;
 
 
     private String                      wordTry;
@@ -62,6 +65,10 @@ public class GameData implements AppDataComponent {
     public GameData(BuzzWord buzzWord) {
         this.buzzWord = buzzWord;
         modes = new ArrayList<>(4);
+        for (int i=0;i< 4; i++){
+            modes.add(new GameMode());
+        }
+
     }
 
 
@@ -97,4 +104,12 @@ public class GameData implements AppDataComponent {
     }
 
 
+    public void setModes(ArrayList<GameMode> modes) {
+        this.modes = modes;
+    }
+
+    public void setMode(int i, GameMode gameMode) {
+        modes.set(i, gameMode);
+
+    }
 }
