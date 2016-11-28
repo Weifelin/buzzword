@@ -1,10 +1,22 @@
 package data;
 
+import controller.GameError;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import propertymanager.PropertyManager;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.HashSet;
+import java.util.Random;
+import java.util.Set;
+import java.util.stream.Stream;
+
 import static buzzword.BuzzWordProperties.HEADING_LABEL;
+import static data.GameData.TOTAL_NUMBER_OF_STORED_WORDS;
 
 /**
  * Created by Weifeng Lin on 11/13/16.
@@ -13,10 +25,16 @@ import static buzzword.BuzzWordProperties.HEADING_LABEL;
 
 
 public class GameMode {
+    private static final int TOTAL_NUMBER_OF_STORED_WORDS    = 10;
+    private static final int WORD_SET_SIZE    = 10;
+
     private String modeName;
     private Label label;
     private GameData data;
     private Level[] levels;
+    private Set<String> wordsSet;
+
+
     private PropertyManager propertyManager = PropertyManager.getManager();
 
     public GameMode(String modeName, GameData data){
@@ -29,6 +47,40 @@ public class GameMode {
         for (int i=0; i<levels.length; i++){
             levels[i] = new Level(this, i);
         }
+        setWords(modeName);
+    }
+
+    private void setWords(String modename) {
+        wordsSet = new HashSet<>(WORD_SET_SIZE);
+        String potentialTarget;
+
+        URL wordsResource = getClass().getClassLoader().getResource("words/"+modename+".txt");
+        assert wordsResource != null;
+        int toSkip = 0;
+        for (int i=0; i< WORD_SET_SIZE; i++) {
+            //int toSkip = new Random().nextInt(TOTAL_NUMBER_OF_STORED_WORDS);
+            if (toSkip < TOTAL_NUMBER_OF_STORED_WORDS) {
+                try (Stream<String> lines = Files.lines(Paths.get(wordsResource.toURI()))) {
+
+                    potentialTarget = lines.skip(toSkip).findFirst().get();
+                    while (!isWord(potentialTarget)) {
+                        //toSkip = new Random().nextInt(TOTAL_NUMBER_OF_STORED_WORDS);
+                        toSkip++;
+                        potentialTarget = lines.skip(toSkip).findFirst().get();
+                    }
+                    wordsSet.add(potentialTarget);
+                    toSkip++;
+
+
+                } catch (IOException | URISyntaxException e) {
+                    e.printStackTrace();
+                    System.exit(1);
+                }
+            }else {
+                break;
+            }
+        }
+        //throw new GameError("Unable to load word list");
     }
 
     public GameData getData(){
@@ -40,5 +92,22 @@ public class GameMode {
 
     public Level[] getLevels(){
         return levels;
+    }
+
+    private boolean isWord(String potentialTarget){
+
+        if (potentialTarget.length() > 16)
+            return false;
+
+        for (int i=0; i<potentialTarget.length();i++){
+            int asciiCode = (int) potentialTarget.charAt(i);
+            if (asciiCode<65 || asciiCode>122){
+                return false;
+            }else if (asciiCode > 90 && asciiCode < 97){
+                return false;
+            }
+        }
+
+        return true;
     }
 }

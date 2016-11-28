@@ -45,6 +45,7 @@
         <property name="SELECT_MODE" value="Select Mode"/>
         <property name="START_PLAYING" value="Start Playing"/>
         <property name="HOME" value="Home"/>
+
         <property name="ENG_DIC" value="English Dictionary"/>
         <property name="PLACES" value="Place"/>
         <property name="SCIENCE" value="Science"/>

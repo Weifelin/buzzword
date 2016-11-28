@@ -61,7 +61,9 @@ public class BuzzWordGUI extends AppGUI {
     Button                      logoutButton;
     Button                      homeButton;
     MenuButton                  selectModesButton;
+
     MenuItem[]                  modesList;
+
     HBox                        buttom;
     BorderPane                  heading;
     VBox                        buttonlist;
@@ -163,10 +165,12 @@ public class BuzzWordGUI extends AppGUI {
                 e.printStackTrace();
             }
         });
+
         logoutButton.setOnAction(event -> {
             buzzWordController.handleLogoutRequest();
         });
 
+        homeButton.setOnAction(event -> buzzWordController.handleReturnHomeReuqest());
         modesList[0].setOnAction(event -> buzzWordController.handleMode0(modesList[0].getText()));
         modesList[1].setOnAction(event -> buzzWordController.handleMode1(modesList[1].getText()));
         modesList[2].setOnAction(event -> buzzWordController.handleMode2(modesList[2].getText()));

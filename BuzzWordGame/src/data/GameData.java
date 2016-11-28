@@ -15,7 +15,10 @@ import java.util.Set;
 public class GameData implements AppDataComponent {
     private static final int TOTAL_NUMBER_OF_STORED_WORDS    = 330622;
 
+
     private ArrayList<GameMode>         modes;
+
+
     private String                      wordTry;
     private int                         totalPoints;
     private int                         targetPoints;
@@ -26,6 +29,7 @@ public class GameData implements AppDataComponent {
     private Set<Word>                   guessedWords;
     private Set<Character>              letters;
 
+    @JsonIgnore
     private User                        user;
 
 
@@ -33,10 +37,34 @@ public class GameData implements AppDataComponent {
     public BuzzWord             buzzWord;
 
 
+    public ArrayList<GameMode> getModes(){
+        return modes;
+    }
+
+    public String getWordTry() {
+        return wordTry;
+    }
+
+    public ArrayList getPassedLevels() {
+        return passedLevels;
+    }
+
+    public Set<String> getWordsSet() {
+        return wordsSet;
+    }
+
+    public Set<Character> getLetters() {
+        return letters;
+    }
+
+
 
     public GameData(BuzzWord buzzWord) {
         this.buzzWord = buzzWord;
+        modes = new ArrayList<>(4);
     }
+
+
 
     public GameData(){}
 
@@ -67,4 +95,6 @@ public class GameData implements AppDataComponent {
     public void setUser(User user) {
         this.user = user;
     }
+
+
 }

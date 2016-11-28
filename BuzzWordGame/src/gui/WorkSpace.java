@@ -49,7 +49,11 @@ public class WorkSpace extends AppWorkspaceComponent{
     Button                  newProfileButton;
     Button                  loginButton;
     Button                  logoutButton;
-    Button                  HomeButton;
+    Button                  homeButton;
+    Button                  startPlaying;
+
+    MenuButton              selectMode;
+
     VBox                    workBox;
     ScrollPane              scrollPane;
 
@@ -61,7 +65,7 @@ public class WorkSpace extends AppWorkspaceComponent{
     private Line[]              lines;
     private StackPane[]         stackPanes;
     private Text[]              texts;
-
+    private Text[]              textsWords;
 
 
     public WorkSpace(BuzzWord initApp){
@@ -72,6 +76,14 @@ public class WorkSpace extends AppWorkspaceComponent{
     }
 
     private void layoutGUI(){
+        newProfileButton = gui.getNewProfileButton();
+        loginButton     = gui.getLoginButton();
+        logoutButton     = gui.getLogoutButton();
+        selectMode = gui.getSelectModesButton();
+        startPlaying     = gui.getStartGameButton();
+        homeButton = gui.getHomeButton();
+
+
         bodyPane = gui.getAppPane();
         workBox = new VBox(10);
         initGrid();
@@ -91,8 +103,9 @@ public class WorkSpace extends AppWorkspaceComponent{
         workBox.getChildren().setAll(modeName, workArea, levelName, startAndPauseButtonBox);
         //workBox.getChildren().set(1, workArea);
 
-
+        rightSide = new VBox();
         bodyPane.setCenter(workBox);
+        bodyPane.setRight(rightSide);
 
         workBox.setAlignment(Pos.CENTER);
 
@@ -119,34 +132,92 @@ public class WorkSpace extends AppWorkspaceComponent{
 
     }
 
-    public void reinitialize(){
+    public void reinitializeAfterLogout(){
+        reinitializeToHome();
+        logoutButton.setVisible(false);
+        selectMode.setVisible(false);
+        startPlaying.setVisible(false);
+        newProfileButton.setVisible(true);
+        loginButton.setVisible(true);
+    }
+
+
+    public void reinitializeToHome(){
+
+        for (int i=0; i<circles.length;i++){
+            circles[i].setVisible(true);
+            texts[i].setVisible(true);
+            Circle circle = circles[i];
+            //circles[i].setOnMouseClicked(event -> hightlight(circle));
+            circles[i].setOnMouseClicked(null);
+        }
+
+        for (int i=0; i< texts.length; i++){
+            texts[i].setText(null);
+        }
+
+        for (int i=0; i< textsWords.length; i++){
+            textsWords[i].setVisible(false);
+        }
+
+        texts[0].setText("B");
+        texts[1].setText("U");
+        texts[4].setText("Z");
+        texts[5].setText("Z");
+        texts[10].setText("W");
+        texts[11].setText("O");
+        texts[14].setText("R");
+        texts[15].setText("D");
+
+
+        for (int i=0; i<lines.length; i++){
+            lines[i].setVisible(false);
+        }
+
+        rightSide.setVisible(false);
+
+
+        //setKey Back
+
+//        modeName.setVisible(false);
+//        levelName.setVisible(false);
+//        startAndPauseButtonBox.setVisible(false);
+        workBox.getChildren().get(0).setVisible(false);//mode name
+        workBox.getChildren().get(2).setVisible(false);//level name
+        workBox.getChildren().get(3).setVisible(false);//start pause
+
+        logoutButton.setVisible(true);
+        homeButton.setVisible(false);
+        selectMode.setVisible(true);
+        startPlaying.setVisible(true);
 
     }
 
     public void reinitializeAfterLogin(User user){
 
-        Button newProfile = gui.getNewProfileButton();
-        Button login      = gui.getLoginButton();
-        Button logout     = gui.getLogoutButton();
-        MenuButton selectMode = gui.getSelectModesButton();
-        Button  start     = gui.getStartGameButton();
+        newProfileButton = gui.getNewProfileButton();
+        loginButton     = gui.getLoginButton();
+        logoutButton     = gui.getLogoutButton();
+        selectMode = gui.getSelectModesButton();
+        startPlaying     = gui.getStartGameButton();
 
-        newProfile.setVisible(false);
-        login.setVisible(false);
+        newProfileButton.setVisible(false);
+        loginButton.setVisible(false);
 
-        logout.setText(user.getUserName());
+        logoutButton.setText(user.getUserName());
         //logout.setText("UserName");
         selectMode.setVisible(true);
-        start.setVisible(true);
-        logout.setVisible(true);
+        startPlaying.setVisible(true);
+        logoutButton.setVisible(true);
 
     }
 
     public void reinitializeAfterModeSelection(GameMode mode){
         gui.getSelectModesButton().setVisible(false);
         gui.getStartGameButton().setVisible(false);
-        Button home = gui.getHomeButton();
-        home.setVisible(true);
+
+        homeButton = gui.getHomeButton();
+        homeButton.setVisible(true);
 
         workBox.getChildren().set(0, mode.getLabel());
 
@@ -176,33 +247,36 @@ public class WorkSpace extends AppWorkspaceComponent{
         workBox.getChildren().set(2, level.getLabel());
         workBox.getChildren().get(3).setVisible(true);
 
+        rightSide.setVisible(true);
+
 
         for (int i=0; i<circles.length;i++){
             circles[i].setVisible(true);
-            texts[i].setVisible(true);
+            texts[i].setVisible(false);
+            textsWords[i].setVisible(true);
             Circle circle = circles[i];
             circles[i].setOnMouseClicked(event -> hightlight(circle));
         }
 
-        for (int i=0; i< texts.length; i++){
-            texts[i].setText(null);
+        for (int i=0; i< textsWords.length; i++){
+            textsWords[i].setText(null);
         }
 
-        texts[0].setText("B");
-        texts[1].setText("U");
-        texts[4].setText("Z");
-        texts[5].setText("Z");
-        texts[10].setText("W");
-        texts[11].setText("O");
-        texts[14].setText("R");
-        texts[15].setText("D");
+        textsWords[0].setText("B");
+        textsWords[1].setText("U");
+        textsWords[4].setText("Z");
+        textsWords[5].setText("Z");
+        textsWords[10].setText("W");
+        textsWords[11].setText("O");
+        textsWords[14].setText("R");
+        textsWords[15].setText("D");
 
 
         for (int i=0; i<lines.length; i++){
             lines[i].setVisible(true);
         }
 
-        rightSide = new VBox();
+        //rightSide = new VBox();
         remainingTimeBox = new HBox();
         startingLettersBox = new HBox();
         guessedWordsBox    = new HBox();
@@ -265,7 +339,7 @@ public class WorkSpace extends AppWorkspaceComponent{
         targetPoint.getChildren().setAll(target, targetPoints);
         rightSide.getChildren().setAll(remainingTimeBox, startingLettersBox, scrollPane, targetPoint);
 
-        bodyPane.setRight(rightSide);
+        //bodyPane.setRight(rightSide);
 
 
     }
@@ -289,6 +363,12 @@ public class WorkSpace extends AppWorkspaceComponent{
         texts[11].setText("O");
         texts[14].setText("R");
         texts[15].setText("D");
+
+        textsWords = new Text[16];
+        for (int i=0; i< textsWords.length; i++){
+            textsWords[i] = new Text(null);
+            textsWords[i].setVisible(false);
+        }
 
         circles = new Circle[16];
 
@@ -318,7 +398,7 @@ public class WorkSpace extends AppWorkspaceComponent{
 
             for (int column=0; column<7; column++){
                 if (isEven(column) && isEven(row)){
-                    stackPanes[stackpaneIndex].getChildren().setAll(circles[circileIndex], texts[textIndex]);
+                    stackPanes[stackpaneIndex].getChildren().setAll(circles[circileIndex], texts[textIndex], textsWords[textIndex]);
                     textIndex++;
                     circileIndex++;
 

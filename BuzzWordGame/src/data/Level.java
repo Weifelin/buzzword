@@ -18,16 +18,18 @@ public class Level {
     private int remainingTime;
     private int targetPoint;
 
+
+
     private PropertyManager propertyManager = PropertyManager.getManager();
 
     public Level(GameMode mode, int level){
         this.mode = mode;
-        this.level = level;
-        label = new Label("Level "+(level+1));
+        this.level = level+1;
+        label = new Label("Level "+level);
         label.getStyleClass().setAll(propertyManager.getPropertyValue(HEADING_LABEL));
         label.setAlignment(Pos.CENTER);
-        remainingTime = 12*(level+1);
-        targetPoint = 20*(level+1);
+        remainingTime = 12*(level);
+        targetPoint = 20*(level);
     }
 
     public GameMode getMode(){
@@ -46,4 +48,7 @@ public class Level {
         return targetPoint;
     }
 
+    public int getLevel() {
+        return level;
+    }
 }
