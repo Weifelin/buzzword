@@ -15,10 +15,10 @@ import java.util.Set;
  */
 
 public class GameData implements AppDataComponent {
-    private static final int TOTAL_NUMBER_OF_STORED_WORDS    = 330622;
+    //private static final int TOTAL_NUMBER_OF_STORED_WORDS    = 330622;
 
 
-    @JsonInclude
+
     private ArrayList<GameMode>  modes;
 
 

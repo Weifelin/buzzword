@@ -22,6 +22,8 @@ public class GameDataFile implements AppFileComponent {
     public void saveData(AppDataComponent data, Path to) throws IOException {
         ObjectMapper toSave = new ObjectMapper();
         //toSave.writerWithDefaultPrettyPrinter();
+        //toSave.enable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
+        toSave.enable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
         try {
 
             toSave.writeValue(new File(String.valueOf(to)),data);

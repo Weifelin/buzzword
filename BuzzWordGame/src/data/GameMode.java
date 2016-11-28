@@ -1,5 +1,9 @@
 package data;
 
+import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import controller.GameError;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
@@ -29,20 +33,32 @@ public class GameMode {
     private static final int TOTAL_NUMBER_OF_STORED_WORDS    = 10;
     private static final int WORD_SET_SIZE    = 10;
 
-    private String modeName;
+
+
+
+    @JsonIgnore
     private Label label;
+
+
+    @JsonIgnore
     private GameData data;
+
     private Level[] levels;
-    private Set<String> wordsSet;
+
+    private ArrayList<String> wordsSet;
+
     private int levelPassed;
+
+
+    private String modeName;
 
     private PropertyManager propertyManager = PropertyManager.getManager();
 
     public GameMode(String modeName, GameData data){
         this.modeName = modeName;
-        label = new Label(modeName);
-        label.getStyleClass().setAll(propertyManager.getPropertyValue(HEADING_LABEL));
-        label.setAlignment(Pos.CENTER);
+//        label = new Label(modeName);
+//        label.getStyleClass().setAll(propertyManager.getPropertyValue(HEADING_LABEL));
+//        label.setAlignment(Pos.CENTER);
         this.data = data;
         levels = new Level[4];
         for (int i=0; i<levels.length; i++){
@@ -53,8 +69,12 @@ public class GameMode {
     }
     public GameMode(){}
 
+    public ArrayList<String> getWordsSet() {
+        return wordsSet;
+    }
+
     private void setWords(String modename) {
-        wordsSet = new HashSet<>(WORD_SET_SIZE);
+        wordsSet = new ArrayList<>(WORD_SET_SIZE);
         String potentialTarget;
 
         URL wordsResource = getClass().getClassLoader().getResource("words/"+modename+".txt");
@@ -91,7 +111,12 @@ public class GameMode {
     public GameData getData(){
         return data;
     }
+
     public Label getLabel(){
+
+        label = new Label(modeName);
+        label.getStyleClass().setAll(propertyManager.getPropertyValue(HEADING_LABEL));
+        label.setAlignment(Pos.CENTER);
         return label;
     }
 
@@ -122,5 +147,13 @@ public class GameMode {
 
     public void setLevelPassed(int levelPassed) {
         this.levelPassed = levelPassed;
+    }
+
+    public void setData(GameData data) {
+        this.data = data;
+    }
+
+    public void setModeName(String modeName) {
+        this.modeName = modeName;
     }
 }

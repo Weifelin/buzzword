@@ -1,5 +1,6 @@
 package data;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import propertymanager.PropertyManager;
@@ -13,8 +14,13 @@ import static buzzword.BuzzWordProperties.HEADING_LABEL;
  */
 public class Level {
     private int level;
+
+    @JsonIgnore
     private Label label;
+
+    @JsonIgnore
     private GameMode mode;
+
     private int remainingTime;
     private int targetPoint;
 
@@ -22,12 +28,17 @@ public class Level {
 
     private PropertyManager propertyManager = PropertyManager.getManager();
 
+    public Level() {
+
+    }
+
+
     public Level(GameMode mode, int targetlevel){
         this.mode = mode;
         this.level = targetlevel+1;
-        label = new Label("Level "+level);
-        label.getStyleClass().setAll(propertyManager.getPropertyValue(HEADING_LABEL));
-        label.setAlignment(Pos.CENTER);
+//        label = new Label("Level "+level);
+//        label.getStyleClass().setAll(propertyManager.getPropertyValue(HEADING_LABEL));
+//        label.setAlignment(Pos.CENTER);
         remainingTime = 12*(level);
         targetPoint = 20*(level);
     }
@@ -37,6 +48,9 @@ public class Level {
     }
 
     public Label getLabel(){
+        label = new Label("Level "+level);
+        label.getStyleClass().setAll(propertyManager.getPropertyValue(HEADING_LABEL));
+        label.setAlignment(Pos.CENTER);
         return label;
     }
 
@@ -50,5 +64,9 @@ public class Level {
 
     public int getLevel() {
         return level;
+    }
+
+    public void setMode(GameMode mode) {
+        this.mode = mode;
     }
 }

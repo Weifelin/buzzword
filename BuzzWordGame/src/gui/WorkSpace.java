@@ -18,6 +18,11 @@ import javafx.scene.shape.Line;
 import javafx.scene.shape.Shape;
 import javafx.scene.text.Text;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Random;
+import java.util.Set;
+
 
 /**
  * Created by Weifeng Lin on 11/13/16.
@@ -64,6 +69,7 @@ public class WorkSpace extends AppWorkspaceComponent{
     private Text[]              texts;
     private Text[]              textsWords;
 
+    private ArrayList<String> wordsSet;
 
     public WorkSpace(BuzzWord initApp){
         game = initApp;
@@ -144,9 +150,10 @@ public class WorkSpace extends AppWorkspaceComponent{
         for (int i=0; i<circles.length;i++){
             circles[i].setVisible(true);
             texts[i].setVisible(true);
-            Circle circle = circles[i];
+            //Circle circle = circles[i];
             //circles[i].setOnMouseClicked(event -> hightlight(circle));
             circles[i].setOnMouseClicked(null);
+            deHighlight(circles[i]);
         }
 
         for (int i=0; i< texts.length; i++){
@@ -170,6 +177,8 @@ public class WorkSpace extends AppWorkspaceComponent{
         for (int i=0; i<lines.length; i++){
             lines[i].setVisible(false);
         }
+
+
 
         rightSide.setVisible(false);
 
@@ -279,10 +288,33 @@ public class WorkSpace extends AppWorkspaceComponent{
         textsWords[14].setText("R");
         textsWords[15].setText("D");
 
+        wordsSet = level.getMode().getWordsSet();
+
+        int wordIndex = new Random().nextInt(wordsSet.size());
+        String word = wordsSet.get(wordIndex);
+
+        //mess up the word
+        char[] wordchar = word.toCharArray();
+        //char[] table = new char[textsWords.length];
+        ArrayList<Integer> added = new ArrayList<>(wordchar.length);
+        for (int i=0; i<wordchar.length; i++){
+            added.add(-1);
+        }
+
+        for (int i = 0; i< wordchar.length; i++){
+            int charIndex = new Random().nextInt(textsWords.length);
+            while (added.contains(charIndex)){
+                charIndex = new Random().nextInt(textsWords.length);
+            }
+            added.set(i, charIndex);
+            textsWords[charIndex].setText(String.valueOf(wordchar[i]));
+        }
+
 
         for (int i=0; i<lines.length; i++){
             lines[i].setVisible(true);
         }
+
 
         //rightSide = new VBox();
         remainingTimeBox = new HBox();
@@ -302,8 +334,8 @@ public class WorkSpace extends AppWorkspaceComponent{
         words[2] = new Word("DRAW");
 
         Text[] texts = new Text[2];
-        texts[0] = new Text("B");
-        texts[1] = new Text("U");
+        texts[0] = new Text(String.valueOf(wordchar[0]));
+        texts[1] = new Text(String.valueOf(wordchar[1]));
 
         rightSide.setSpacing(20);
         remainingTime = new Label("TimeRemaining: "+level.getRemainingTime()+" seconds");
@@ -448,5 +480,13 @@ public class WorkSpace extends AppWorkspaceComponent{
         dropShadow.setHeight(50);
 
         shape.setEffect(dropShadow);
+    }
+
+    private void deHighlight(Shape shape){
+        shape.setEffect(null);
+    }
+
+    public Text[] getTextsWords() {
+        return textsWords;
     }
 }

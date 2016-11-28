@@ -176,6 +176,10 @@ public class BuzzWordGUI extends AppGUI {
         modesList[2].setOnAction(event -> buzzWordController.handleMode2(modesList[2].getText()));
         modesList[3].setOnAction(event -> buzzWordController.handleMode3(modesList[3].getText()));
 
+        pauseGameButton.setOnAction(event -> buzzWordController.handlePauseRequest());
+        resumeGameButton.setOnAction(event -> buzzWordController.handleResumeRequest());
+        exitButton.setOnAction(event -> buzzWordController.handleExitRequest());
+
     }
 
     // INITIALIZE THE WINDOW (i.e. STAGE) PUTTING ALL THE CONTROLS

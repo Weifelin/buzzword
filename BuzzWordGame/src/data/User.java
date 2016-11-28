@@ -29,6 +29,7 @@ public class User implements AppDataComponent {
     private GameData    gameData;
     private byte[]      salt;
 
+
 //    private Map<String, String> versions;
 //
 //    private String provider;

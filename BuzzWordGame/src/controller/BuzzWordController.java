@@ -3,6 +3,7 @@ package controller;
 import buzzword.BuzzWord;
 import data.GameData;
 import data.GameMode;
+import data.Level;
 import data.User;
 import gui.WorkSpace;
 import javafx.event.ActionEvent;
@@ -22,6 +23,7 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import propertymanager.PropertyManager;
 import ui.AppMessageDialogSingleton;
+import ui.YesNoCancelDialogSingleton;
 
 import java.io.File;
 import java.io.IOException;
@@ -56,7 +58,7 @@ public class BuzzWordController implements FileController {
     private boolean             gameover;
 
     private int                 discovered;
-    private Button              playButton;
+    private Button              resumeButton;
     private Button              pauseButton;
 
     private Label               timeRemaining;
@@ -80,6 +82,9 @@ public class BuzzWordController implements FileController {
         user = defaultUser;
         gameData.setUser(user);
         buzzWord.setDataComponent(user);
+
+        resumeButton = buzzWord.getGUI().getResumeButton();
+        pauseButton = buzzWord.getGUI().getPauseButton();
 
 
     }
@@ -217,7 +222,81 @@ public class BuzzWordController implements FileController {
 
     @Override
     public void handleExitRequest() {
+        handlePauseRequest();
 
+        StackPane askuser = new StackPane();
+
+
+
+
+
+
+        Label  messageLabel = new Label("Do you want to exit?");
+
+        Button yesButton = new Button("Yes");
+        Button noButton = new Button("No");
+
+        HBox buttonBox = new HBox();
+        buttonBox.getChildren().add(yesButton);
+        buttonBox.getChildren().add(noButton);
+
+        VBox vBox = new VBox(messageLabel, buttonBox);
+        vBox.setAlignment(Pos.CENTER);
+
+
+
+//        String name = username.getText();
+//        String pw = passwordField.getText();
+
+        askuser.getChildren().setAll(vBox);
+        Scene scene = new Scene(askuser, 300,200, Color.LIGHTGRAY);
+        Stage stage = new Stage();
+        stage.setScene(scene);
+//        createUser.setPrefSize(300, 200);
+//        Pane dia = new Pane(createUser);
+//        pane.setPrefSize(300,200);
+
+        stage.initOwner(buzzWord.getGUI().getWindow());
+        stage.initModality(Modality.WINDOW_MODAL);
+        stage.initStyle(StageStyle.UNDECORATED);
+        stage.show();
+
+
+
+
+//        Dialog dialog = new Dialog();
+//        dialog.getDialogPane().getChildren().setAll(dia);
+//        dialog.initOwner(buzzWord.getGUI().getWindow());
+//        dialog.initModality(Modality.WINDOW_MODAL);
+//        dialog.showAndWait();
+        int[] selection = {0};
+        noButton.setOnAction(event -> {
+            selection[0] = 0;
+
+        });
+
+        yesButton.setOnAction(event -> {
+            selection[0] = 1;
+        });
+
+        stage.close();
+
+        boolean leave = true;
+        int result = selection[0];
+
+        //result = prompToSave();
+        if (result == 1){
+            save();
+        }
+        if (result == 0){
+            leave = false;
+        }
+        if (result == 2){
+            leave = false;
+        }
+
+        if (leave)
+            System.exit(0);
     }
 
     public void handleReturnHomeReuqest() {
@@ -302,6 +381,7 @@ public class BuzzWordController implements FileController {
                 wrong.setVisible(false);
                 user = new User(name.getText(), pw.getText(), gameData);
                 gameData.setUser(user);
+                buzzWord.setDataComponent(user);
                 //gameData.setUser(name,pw);
                 stage.close();
                 WorkSpace w = (WorkSpace) buzzWord.getWorkspaceComponent();
@@ -362,13 +442,70 @@ public class BuzzWordController implements FileController {
         gameData.setMode(3, gameMode);
         WorkSpace workSpace = (WorkSpace) buzzWord.getWorkspaceComponent();
         workSpace.reinitializeAfterModeSelection(gameMode);
-
     }
 
 
 
     private int prompToSave(){
-        return 0;
+        StackPane askuser = new StackPane();
+
+
+
+
+
+
+        Label  messageLabel = new Label("Do you want to exit?");
+
+        Button yesButton = new Button("Yes");
+        Button noButton = new Button("No");
+
+        HBox buttonBox = new HBox();
+        buttonBox.getChildren().add(yesButton);
+        buttonBox.getChildren().add(noButton);
+
+        VBox vBox = new VBox(messageLabel, buttonBox);
+        vBox.setAlignment(Pos.CENTER);
+
+
+
+//        String name = username.getText();
+//        String pw = passwordField.getText();
+
+        askuser.getChildren().setAll(vBox);
+        Scene scene = new Scene(askuser, 300,200, Color.LIGHTGRAY);
+        Stage stage = new Stage();
+        stage.setScene(scene);
+//        createUser.setPrefSize(300, 200);
+//        Pane dia = new Pane(createUser);
+//        pane.setPrefSize(300,200);
+
+        stage.initOwner(buzzWord.getGUI().getWindow());
+        stage.initModality(Modality.WINDOW_MODAL);
+        stage.initStyle(StageStyle.UNDECORATED);
+        stage.show();
+
+
+
+
+//        Dialog dialog = new Dialog();
+//        dialog.getDialogPane().getChildren().setAll(dia);
+//        dialog.initOwner(buzzWord.getGUI().getWindow());
+//        dialog.initModality(Modality.WINDOW_MODAL);
+//        dialog.showAndWait();
+        int[] selection = {0};
+        noButton.setOnAction(event -> {
+           selection[0] = 0;
+
+        });
+
+        yesButton.setOnAction(event -> {
+            selection[0] = 1;
+        });
+
+        stage.close();
+        return  selection[0];
+
+
     }
 
 
@@ -416,6 +553,18 @@ public class BuzzWordController implements FileController {
     private void resetData(User data){
         this.user = data;
         this.gameData = user.getGameData();
+        ArrayList<GameMode>  modes = gameData.getModes();
+
+        for (int i=0; i<modes.size(); i++){
+            modes.get(i).setData(gameData);
+//            Level[] levels = modes.get(i).getLevels();
+//            for (int j =0; j<levels.length; j++){
+//
+//                levels[j].setMode(modes.get(i));
+//            }
+        }
+
+
 
 
         buzzWord.setDataComponent(user);
@@ -427,5 +576,25 @@ public class BuzzWordController implements FileController {
     }
 
 
+    public void handlePauseRequest() {
+        WorkSpace workSpace = (WorkSpace) buzzWord.getWorkspaceComponent();
+        Text[] text = workSpace.getTextsWords();
+        for (int i=0; i<text.length; i++){
+            text[i].setVisible(false);
+        }
 
+        pauseButton.setVisible(false);
+        resumeButton.setVisible(true);
+    }
+
+    public void handleResumeRequest() {
+        WorkSpace workSpace = (WorkSpace) buzzWord.getWorkspaceComponent();
+        Text[] text = workSpace.getTextsWords();
+        for (int i=0; i<text.length; i++){
+            text[i].setVisible(true);
+        }
+
+        resumeButton.setVisible(false);
+        pauseButton.setVisible(true);
+    }
 }
