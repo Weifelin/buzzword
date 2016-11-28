@@ -8,6 +8,7 @@ import components.AppDataComponent;
 import components.AppFileComponent;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Path;
 
@@ -48,17 +49,18 @@ public class GameDataFile implements AppFileComponent {
 //    }
 
     @Override
-    public AppDataComponent loadData(AppDataComponent data, Path from) {
+    public AppDataComponent loadData(AppDataComponent data, Path from) throws FileNotFoundException {
         ObjectMapper toLoad = new ObjectMapper();
         toLoad.enableDefaultTyping(ObjectMapper.DefaultTyping.OBJECT_AND_NON_CONCRETE);
 
         User file = null;
         try {
             file = toLoad.readValue(new File(String.valueOf(from)), User.class);
+        } catch (FileNotFoundException f){
+            throw f;
         } catch (Exception e){
             e.printStackTrace();
         }
-
 
 
         return file;

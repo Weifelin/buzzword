@@ -43,11 +43,17 @@ public class GameMode {
     @JsonIgnore
     private GameData data;
 
+    @JsonIgnore
     private Level[] levels;
 
-    private ArrayList<String> wordsSet;
 
-    private int levelPassed;
+
+
+    @JsonIgnore
+    private ArrayList<Word> wordsSet;
+
+
+    private int levelPassed = 0;
 
 
     private String modeName;
@@ -65,11 +71,15 @@ public class GameMode {
             levels[i] = new Level(this, i);
         }
         setWords(modeName);
-        levelPassed =0;
+        levelPassed = 0;
     }
+
+
     public GameMode(){}
 
-    public ArrayList<String> getWordsSet() {
+
+
+    public ArrayList<Word> getWordsSet() {
         return wordsSet;
     }
 
@@ -93,7 +103,14 @@ public class GameMode {
                         Stream<String> linesII = Files.lines(Paths.get(wordsResource.toURI()));
                         potentialTarget = linesII.skip(toSkip).findFirst().get();
                     }
-                    wordsSet.add(potentialTarget);
+
+                    while (wordsSet.contains(potentialTarget)){
+                        toSkip++;
+                        Stream<String> linesIII = Files.lines(Paths.get(wordsResource.toURI()));
+                        potentialTarget = linesIII.skip(toSkip).findFirst().get();
+                    }
+
+                    wordsSet.add(new Word(potentialTarget));
                     toSkip++;
 
 
@@ -156,4 +173,18 @@ public class GameMode {
     public void setModeName(String modeName) {
         this.modeName = modeName;
     }
+
+    public String getModeName() {
+        return modeName;
+    }
+
+    public void resetLevelsAndWords(){
+        levels = new Level[4];
+        for (int i=0; i<levels.length; i++){
+            levels[i] = new Level(this, i);
+        }
+        setWords(modeName);
+    }
+
+
 }

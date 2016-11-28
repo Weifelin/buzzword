@@ -23,6 +23,7 @@ public class Level {
 
     private int remainingTime;
     private int targetPoint;
+    private  int wordAmount;
 
 
 
@@ -41,6 +42,7 @@ public class Level {
 //        label.setAlignment(Pos.CENTER);
         remainingTime = 12*(level);
         targetPoint = 20*(level);
+        wordAmount = 2+ level;
     }
 
     public GameMode getMode(){
@@ -68,5 +70,16 @@ public class Level {
 
     public void setMode(GameMode mode) {
         this.mode = mode;
+    }
+
+    public int getWordAmount() {
+        return wordAmount;
+    }
+
+    public void adjustTargetPoints(int totalScore){
+        if (targetPoint > totalScore){
+            targetPoint = totalScore -10;
+        }
+
     }
 }

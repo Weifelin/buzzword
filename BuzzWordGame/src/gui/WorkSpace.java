@@ -69,7 +69,11 @@ public class WorkSpace extends AppWorkspaceComponent{
     private Text[]              texts;
     private Text[]              textsWords;
 
-    private ArrayList<String> wordsSet;
+    private ArrayList<Word>  wordsSet;
+    private ArrayList<Word>  guessedWord;
+    private ArrayList<Word>     wordSequenceToGuess;
+
+
 
     public WorkSpace(BuzzWord initApp){
         game = initApp;
@@ -288,13 +292,28 @@ public class WorkSpace extends AppWorkspaceComponent{
         textsWords[14].setText("R");
         textsWords[15].setText("D");
 
-        wordsSet = level.getMode().getWordsSet();
+        wordsSet = level.getMode().getWordsSet(); // all words
+        wordSequenceToGuess = new ArrayList<>();
+        int wordamount = level.getWordAmount();
 
-        int wordIndex = new Random().nextInt(wordsSet.size());
-        String word = wordsSet.get(wordIndex);
+        int wordIndex;
+        Word word ;
+
+        ArrayList<Integer> has = new ArrayList<>();
+        has.add(-1);
+
+        for (int i=0; i<wordamount;i++){
+            wordIndex = new Random().nextInt(wordsSet.size());
+            while (has.contains(wordIndex)){
+                wordIndex = new Random().nextInt(wordsSet.size());
+            }
+            word = wordsSet.get(wordIndex);
+            has.add(wordIndex);
+            wordSequenceToGuess.add(wordsSet.get(wordIndex));
+        }
 
         //mess up the word
-        char[] wordchar = word.toCharArray();
+        char[] wordchar = wordSequenceToGuess.get(0).getWordvalue().toCharArray();
         //char[] table = new char[textsWords.length];
         ArrayList<Integer> added = new ArrayList<>(wordchar.length);
         for (int i=0; i<wordchar.length; i++){
@@ -328,10 +347,13 @@ public class WorkSpace extends AppWorkspaceComponent{
         scrollPane = new ScrollPane();
         scrollPane.setPrefSize(150,300);
 
-        Word[] words = new Word[3];
-        words[0] = new Word("WAR");
-        words[1] = new Word("RAW");
-        words[2] = new Word("DRAW");
+
+        guessedWord = new ArrayList<>();
+
+//        Word[] words = new Word[3];
+//        words[0] = new Word("WAR");
+//        words[1] = new Word("RAW");
+//        words[2] = new Word("DRAW");
 
         Text[] texts = new Text[2];
         texts[0] = new Text(String.valueOf(wordchar[0]));
@@ -346,10 +368,16 @@ public class WorkSpace extends AppWorkspaceComponent{
         startingLettersBox.getChildren().add(texts[1]);
 
         int point=0;
-        for (int i=0; i<words.length; i++){
-            wordBox.getChildren().add(words[i].getWord());
-            pointsBox.getChildren().add(words[i].getPoint());
-            point = point+words[i].getPoints();
+
+        //hard coded guessed word.
+        for (int i=0; i<wordSequenceToGuess.size(); i++){
+            guessedWord.add(wordSequenceToGuess.get(i));
+        }
+
+        for (int i=0; i<guessedWord.size(); i++){
+            wordBox.getChildren().add(guessedWord.get(i).getWord());
+            pointsBox.getChildren().add(guessedWord.get(i).getPoint());
+            point = point+guessedWord.get(i).getPoints();
         }
 
         Label total = new Label("Total");
@@ -372,6 +400,7 @@ public class WorkSpace extends AppWorkspaceComponent{
 
 
         targetPoint = new VBox();
+        level.adjustTargetPoints(point);
         Label target = new Label("Target");
         target.setStyle("-fx-font-size: 12pt; -fx-font-family: \"Segoe UI Light\"; -fx-text-fill:white; -fx-opacity: 1;");
         Label targetPoints = new Label(String.valueOf(level.getTargetPoint()));

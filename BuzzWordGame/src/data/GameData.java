@@ -112,4 +112,8 @@ public class GameData implements AppDataComponent {
         modes.set(i, gameMode);
 
     }
+
+    public void setBuzzWord(BuzzWord buzzWord) {
+        this.buzzWord = buzzWord;
+    }
 }

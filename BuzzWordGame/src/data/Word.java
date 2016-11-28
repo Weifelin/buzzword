@@ -11,11 +11,14 @@ public class Word {
     private Text word;
     private int points;
     private Text point;
+    private String wordvalue;
+
 
     public Word(String string){
-        word = new Text(string);
-        if (string.length()<=3){
-            points = 10;
+        this.word = new Text(string);
+        this.wordvalue  = string;
+        if (string.length()<3){
+            points = 0;
         } else {
             points = 10 + 10*(string.length()-3);
         }
@@ -32,5 +35,9 @@ public class Word {
 
     public int getPoints(){
         return points;
+    }
+
+    public String getWordvalue() {
+        return wordvalue;
     }
 }
