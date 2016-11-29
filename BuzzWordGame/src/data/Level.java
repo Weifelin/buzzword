@@ -41,8 +41,10 @@ public class Level {
 //        label.getStyleClass().setAll(propertyManager.getPropertyValue(HEADING_LABEL));
 //        label.setAlignment(Pos.CENTER);
         remainingTime = 12*(level);
-        targetPoint = 20*(level);
+
         wordAmount = 2+ level;
+
+        targetPoint = 39*(level)*wordAmount;
     }
 
     public GameMode getMode(){
