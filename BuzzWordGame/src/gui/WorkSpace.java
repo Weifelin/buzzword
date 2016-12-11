@@ -246,16 +246,20 @@ public class WorkSpace extends AppWorkspaceComponent{
 
         int levelPassed = mode.getLevelPassed();
 
+        BuzzWordController controller = (BuzzWordController) gui.getFileController();
+
+
         for (int i=0; i<=levelPassed; i++){
             circles[i].setFill(Color.AQUA);
             Level level = levels[i];
-            circles[i].setOnMouseClicked(event -> reinitializeAfterLevelSelection(level));
+            //circles[i].setOnMouseClicked(event -> reinitializeAfterLevelSelection(level));
+            circles[i].setOnMouseClicked(event -> controller.play(level) );
         }
 
 
     }
 
-    public void reinitializeAfterLevelSelection(Level level){
+    public void reinitializeAfterLevelSelection(Level level) {
 
 
         workArea.setAlignment(Pos.CENTER);
@@ -269,7 +273,7 @@ public class WorkSpace extends AppWorkspaceComponent{
         rightSide.setVisible(true);
 
 
-        for (int i=0; i<circles.length;i++){
+        for (int i = 0; i < circles.length; i++) {
             circles[i].setVisible(true);
             texts[i].setVisible(false);
             textsWords[i].setVisible(true);
@@ -279,7 +283,7 @@ public class WorkSpace extends AppWorkspaceComponent{
             circles[i].setOnMouseClicked(event -> hightlight(circle));
         }
 
-        for (int i=0; i< textsWords.length; i++){
+        for (int i = 0; i < textsWords.length; i++) {
             textsWords[i].setText(null);
         }
 
@@ -297,17 +301,17 @@ public class WorkSpace extends AppWorkspaceComponent{
         int wordamount = level.getWordAmount();
 
         int wordIndex;
-        Word word ;
+        //Word word;
 
         ArrayList<Integer> has = new ArrayList<>();
         has.add(-1);
 
-        for (int i=0; i<wordamount;i++){
+        for (int i = 0; i < wordamount; i++) {
             wordIndex = new Random().nextInt(wordsSet.size());
-            while (has.contains(wordIndex)){
+            while (has.contains(wordIndex)) {
                 wordIndex = new Random().nextInt(wordsSet.size());
             }
-            word = wordsSet.get(wordIndex);
+            //word = wordsSet.get(wordIndex);
             has.add(wordIndex);
             wordSequenceToGuess.add(wordsSet.get(wordIndex));
         }
@@ -316,13 +320,13 @@ public class WorkSpace extends AppWorkspaceComponent{
         char[] wordchar = wordSequenceToGuess.get(0).getWordvalue().toCharArray();
         //char[] table = new char[textsWords.length];
         ArrayList<Integer> added = new ArrayList<>(wordchar.length);
-        for (int i=0; i<wordchar.length; i++){
+        for (int i = 0; i < wordchar.length; i++) {
             added.add(-1);
         }
 
-        for (int i = 0; i< wordchar.length; i++){
+        for (int i = 0; i < wordchar.length; i++) {
             int charIndex = new Random().nextInt(textsWords.length);
-            while (added.contains(charIndex)){
+            while (added.contains(charIndex)) {
                 charIndex = new Random().nextInt(textsWords.length);
             }
             added.set(i, charIndex);
@@ -330,7 +334,7 @@ public class WorkSpace extends AppWorkspaceComponent{
         }
 
 
-        for (int i=0; i<lines.length; i++){
+        for (int i = 0; i < lines.length; i++) {
             lines[i].setVisible(true);
         }
 
@@ -338,14 +342,14 @@ public class WorkSpace extends AppWorkspaceComponent{
         //rightSide = new VBox();
         remainingTimeBox = new HBox();
         startingLettersBox = new HBox();
-        guessedWordsBox    = new HBox();
+        guessedWordsBox = new HBox();
 
-        wordBox             = new VBox();
+        wordBox = new VBox();
         wordBox.setSpacing(5);
-        pointsBox           = new VBox();
+        pointsBox = new VBox();
         pointsBox.setSpacing(5);
         scrollPane = new ScrollPane();
-        scrollPane.setPrefSize(150,300);
+        scrollPane.setPrefSize(150, 300);
 
 
         guessedWord = new ArrayList<>();
@@ -360,24 +364,24 @@ public class WorkSpace extends AppWorkspaceComponent{
         texts[1] = new Text(String.valueOf(wordchar[1]));
 
         rightSide.setSpacing(20);
-        remainingTime = new Label("TimeRemaining: "+level.getRemainingTime()+" seconds");
+        remainingTime = new Label("TimeRemaining: " + level.getRemainingTime() + " seconds");
         remainingTime.setStyle("-fx-font-size: 12pt; -fx-font-family: \"Segoe UI Light\"; -fx-text-fill: rgb(255, 132, 144); -fx-opacity: 1;");
         remainingTimeBox.getChildren().setAll(remainingTime);
 
         startingLettersBox.getChildren().add(texts[0]);
         startingLettersBox.getChildren().add(texts[1]);
 
-        int point=0;
+        int point = 0;
 
         //hard coded guessed word.
-        for (int i=0; i<wordSequenceToGuess.size(); i++){
+        for (int i = 0; i < wordSequenceToGuess.size(); i++) {
             guessedWord.add(wordSequenceToGuess.get(i));
         }
 
-        for (int i=0; i<guessedWord.size(); i++){
+        for (int i = 0; i < guessedWord.size(); i++) {
             wordBox.getChildren().add(guessedWord.get(i).getWord());
             pointsBox.getChildren().add(guessedWord.get(i).getPoint());
-            point = point+guessedWord.get(i).getPoints();
+            point = point + guessedWord.get(i).getPoints();
         }
 
         Label total = new Label("Total");
@@ -390,13 +394,11 @@ public class WorkSpace extends AppWorkspaceComponent{
         wordBox.getChildren().add(total);
         pointsBox.getChildren().add(totalPoints);
 
-        guessedWordsBox.getChildren().setAll(wordBox,pointsBox);
+        guessedWordsBox.getChildren().setAll(wordBox, pointsBox);
         scrollPane.setContent(guessedWordsBox);
         guessedWordsBox.setPrefSize(scrollPane.getPrefWidth(), scrollPane.getPrefHeight());
-        wordBox.setPrefSize(guessedWordsBox.getPrefWidth()/2, guessedWordsBox.getPrefHeight());
-        pointsBox.setPrefSize(guessedWordsBox.getPrefWidth()/2, guessedWordsBox.getPrefHeight());
-
-
+        wordBox.setPrefSize(guessedWordsBox.getPrefWidth() / 2, guessedWordsBox.getPrefHeight());
+        pointsBox.setPrefSize(guessedWordsBox.getPrefWidth() / 2, guessedWordsBox.getPrefHeight());
 
 
         targetPoint = new VBox();
@@ -472,6 +474,7 @@ public class WorkSpace extends AppWorkspaceComponent{
                     circileIndex++;
 
                 } else if (isEven(row) && !isEven(column)){
+                    // horizontal
                     stackPanes[stackpaneIndex].getChildren().setAll(lines[linesIndex]);
 
                     linesIndex++;
@@ -517,5 +520,45 @@ public class WorkSpace extends AppWorkspaceComponent{
 
     public Text[] getTextsWords() {
         return textsWords;
+    }
+
+    public VBox getWordBox() {
+        return wordBox;
+    }
+
+    public VBox getPointsBox() {
+        return pointsBox;
+    }
+
+    public HBox getStartingLettersBox() {
+        return startingLettersBox;
+    }
+
+    public VBox getTargetPoint() {
+        return targetPoint;
+    }
+
+    public Label getRemainingTime() {
+        return remainingTime;
+    }
+
+    public ArrayList<Word> getGuessedWord() {
+        return guessedWord;
+    }
+
+    public Circle[] getCircles() {
+        return circles;
+    }
+
+    public ArrayList<Word> getWordsSet() {
+        return wordsSet;
+    }
+
+    public ArrayList<Word> getWordSequenceToGuess() {
+        return wordSequenceToGuess;
+    }
+
+    public Line[] getLines() {
+        return lines;
     }
 }
