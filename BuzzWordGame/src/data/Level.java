@@ -70,6 +70,10 @@ public class Level {
         return level;
     }
 
+    public int getLevelIndex(){
+        return level-1;
+    }
+
     public void setMode(GameMode mode) {
         this.mode = mode;
     }

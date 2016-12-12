@@ -125,6 +125,7 @@ public class WorkSpace extends AppWorkspaceComponent{
         BuzzWordController controller = (BuzzWordController) gui.getFileController();
         controller.setBuzzWord(game);
         controller.start();
+        controller.setWorkSpace(this);
     }
 
 
@@ -265,7 +266,9 @@ public class WorkSpace extends AppWorkspaceComponent{
         workArea.setAlignment(Pos.CENTER);
         modeName.setAlignment(Pos.CENTER);
         levelName.setAlignment(Pos.CENTER);
-        startAndPauseButtonBox.setAlignment(Pos.CENTER);
+        startAndPauseButtonBox.setAlignment(Pos.CENTER); // resume , pause
+        startAndPauseButtonBox.getChildren().get(0).setVisible(false);
+        startAndPauseButtonBox.getChildren().get(1).setVisible(true);
 
         workBox.getChildren().set(2, level.getLabel());
         workBox.getChildren().get(3).setVisible(true);

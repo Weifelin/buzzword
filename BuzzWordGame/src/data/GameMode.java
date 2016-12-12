@@ -31,7 +31,7 @@ import static buzzword.BuzzWordProperties.HEADING_LABEL;
 
 public class GameMode {
     private static final int TOTAL_NUMBER_OF_STORED_WORDS    = 10;
-    private static final int WORD_SET_SIZE    = 10;
+    private static final int WORD_SET_SIZE    = 100;
 
 
 
@@ -148,7 +148,7 @@ public class GameMode {
 
         for (int i=0; i<potentialTarget.length();i++){
             int asciiCode = (int) potentialTarget.charAt(i);
-            if ((asciiCode<65 && asciiCode != 32 ) || asciiCode>122){
+            if ((asciiCode<65 ) || asciiCode>122){
                 return false;
             }else if (asciiCode > 90 && asciiCode < 97){
                 return false;

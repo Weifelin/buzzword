@@ -7,6 +7,7 @@ import controller.FileController;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
+import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
@@ -67,6 +68,7 @@ public class BuzzWordGUI extends AppGUI {
     HBox                        buttom;
     BorderPane                  heading;
     VBox                        buttonlist;
+    //TilePane                        buttonlist;
     private double x = 0;
     private double y = 0;
 
@@ -129,9 +131,12 @@ public class BuzzWordGUI extends AppGUI {
 
 
         buttonlist = new VBox();
+        //buttonlist = new TilePane(Orientation.VERTICAL);
 
         buttonlist.getChildren().addAll(newProfileButton, loginButton, logoutButton, selectModesButton, startGameButton, homeButton);
         buttonlist.setSpacing(10);
+        //buttonlist.setVgap(10);
+
 
         resumeGameButton = new Button();
         pauseGameButton = new Button();
@@ -179,6 +184,7 @@ public class BuzzWordGUI extends AppGUI {
         pauseGameButton.setOnAction(event -> buzzWordController.handlePauseRequest());
         resumeGameButton.setOnAction(event -> buzzWordController.handleResumeRequest());
         exitButton.setOnAction(event -> buzzWordController.handleExitRequest());
+        startGameButton.setOnAction(event -> buzzWordController.handleQuickGameReuqest());
 
     }
 
@@ -224,6 +230,9 @@ public class BuzzWordGUI extends AppGUI {
         appPane.setTop(heading);
         heading.setPadding(new Insets(5, 0, 5, 0));
         appPane.setLeft(buttonlist);
+
+        //appPane.getLeft().autosize();
+
         buttonlist.setPadding(new Insets(5,20, 5, 5));
         appPane.setPadding(new Insets(10,20,20,20));
 

@@ -38,6 +38,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.*;
 
+import static buzzword.BuzzWordProperties.PLACES;
 import static settings.AppPropertyType.*;
 import static settings.InitializationParameters.APP_WORKDIR_PATH;
 
@@ -66,6 +67,7 @@ public class BuzzWordController implements FileController {
     private int                 discovered;
     private Button              resumeButton;
     private Button              pauseButton;
+    private int                 currentLevelIndex;
 
     private Label               timeRemaining;
 
@@ -112,21 +114,32 @@ public class BuzzWordController implements FileController {
         resumeButton = buzzWord.getGUI().getResumeButton();
         pauseButton = buzzWord.getGUI().getPauseButton();
 
-        workSpace = (WorkSpace) buzzWord.getWorkspaceComponent();
+        //workSpace = (WorkSpace) buzzWord.getWorkspaceComponent();
 
 
     }
 
     private void end(){
+        PropertyManager propertyManager = PropertyManager.getManager();
 
         Platform.runLater(()->{
 
             if (success == true){
                 AppMessageDialogSingleton dialogSingleton = AppMessageDialogSingleton.getSingleton();
                 dialogSingleton.showEnd(propertyManager.getPropertyValue(WIN_LABEL_TITLE), propertyManager.getPropertyValue(WIN_LABEL_MESSAGE));
+                Level newLevel = currentLevel.getMode().getLevels()[currentLevel.getLevel()-1+1];
+                if (countdownTimer != null){
+                    countdownTimer.cancel();
+                }
+                play(newLevel);
+
             } else if (success == false){
                 AppMessageDialogSingleton dialogSingleton1 = AppMessageDialogSingleton.getSingleton();
                 dialogSingleton1.showEnd(propertyManager.getPropertyValue(LOST_LABEL_TITLE), propertyManager.getPropertyValue(LOST_LABEL_MESSAGE ));
+                if (countdownTimer != null){
+                    countdownTimer.cancel();
+                }
+                play(currentLevel);
             }
         });
 
@@ -427,6 +440,7 @@ public class BuzzWordController implements FileController {
 
 
     public void play(Level level) {
+        success = false;
         workSpace.reinitializeAfterLevelSelection(level);
         currentLevel = level;
         wordBox = workSpace.getWordBox(); // for storing guessed word.
@@ -466,7 +480,7 @@ public class BuzzWordController implements FileController {
 
 
             }
-        }, 1000,1000);
+        }, 3000,1000);
 
         ArrayList<ArrayList<Integer>> paths = new ArrayList<>();
         ArrayList<ArrayList<Integer>> neighboursList = new ArrayList<>();
@@ -494,15 +508,16 @@ public class BuzzWordController implements FileController {
                             }else {
                                 for (int i = 0; i < guessingAttempts.size(); i++) {
                                     for (int j = i + 1; j < guessingAttempts.size(); j++) {
-                                        if (guessingAttempts.get(i).size() >= guessingAttempts.get(j).size()) {
-                                            guessing = guessingAttempts.get(i);
+                                        if (guessingAttempts.get(i).size() > guessingAttempts.get(j).size()) {
+                                            guessingAttempts.set(j, guessingAttempts.get(i));
                                         } else {
-                                            guessing = guessingAttempts.get(j);
+                                            guessingAttempts.set(i, guessingAttempts.get(j));
                                         }
                                     }
                                 }
                             }
 
+                            guessing = guessingAttempts.get(0);
 
                             String guessingTry = "";
 
@@ -524,7 +539,8 @@ public class BuzzWordController implements FileController {
                             String string = wordSequenceString.get(0);
                             string = string.toLowerCase();
 
-                            if (guessingTry.contains(string)){
+                            if (contains(guessingTry, string)){ //guessingTry.contains(string)
+
                                 guessedWord.add(new Word(string));
 
 
@@ -554,9 +570,9 @@ public class BuzzWordController implements FileController {
                                 }
                             }
 
-                            if (time<=0 || success){
-                                stop();
-                            }
+//                            if (time<=0 || success){
+//                                stop();
+//                            }
 
 
 
@@ -723,6 +739,35 @@ public class BuzzWordController implements FileController {
         for (int i=0; i<circles.length; i++){
             deHighlight(circles[i]);
         }
+
+    }
+
+    private boolean contains(String a, String b){
+        // see if string a contains all char in b: each char in b can be found in a.
+        // a = guess; b = answer
+        if (a.length() <  b.length()){
+            return false;
+        }
+
+        ArrayList<Character> stringA = new ArrayList<>();
+        ArrayList<Character> stringB = new ArrayList<>();
+
+        for (int i=0; i<a.length(); i++){
+            stringA.add(a.charAt(i));
+        }
+
+        for (int i=0; i<b.length(); i++){
+            stringB.add(b.charAt(i));
+        }
+
+        boolean isContain = true;
+        for (int i=0; i<stringB.size(); i++){
+            if (!stringA.contains(stringB.get(i))){
+                isContain = false;
+            }
+        }
+
+        return isContain;
 
     }
 
@@ -1496,6 +1541,20 @@ public class BuzzWordController implements FileController {
         }
 
         return isNot;
+    }
+
+    public void handleQuickGameReuqest() {
+        PropertyManager propertyManager = PropertyManager.getManager();
+
+        GameMode gameMode = new GameMode("PlaceD", gameData );
+        workSpace.reinitializeAfterModeSelection(gameMode);
+        play(gameMode.getLevels()[0]);
+
+
+    }
+
+    public void setWorkSpace(WorkSpace workSpace) {
+        this.workSpace = workSpace;
     }
 }
 
