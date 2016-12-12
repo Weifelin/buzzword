@@ -280,7 +280,7 @@ public class WorkSpace extends AppWorkspaceComponent{
             Circle circle = circles[i];
             circles[i].setFill(Color.GRAY);
 
-            circles[i].setOnMouseClicked(event -> hightlight(circle));
+            circles[i].setOnMouseClicked(null);
         }
 
         for (int i = 0; i < textsWords.length; i++) {
@@ -349,7 +349,7 @@ public class WorkSpace extends AppWorkspaceComponent{
         pointsBox = new VBox();
         pointsBox.setSpacing(5);
         scrollPane = new ScrollPane();
-        scrollPane.setPrefSize(150, 300);
+        scrollPane.setPrefSize(170, 300);
 
 
         guessedWord = new ArrayList<>();
@@ -378,11 +378,16 @@ public class WorkSpace extends AppWorkspaceComponent{
             guessedWord.add(wordSequenceToGuess.get(i));
         }
 
+        //guessedWord.add(new Word("go"));
+
         for (int i = 0; i < guessedWord.size(); i++) {
             wordBox.getChildren().add(guessedWord.get(i).getWord());
             pointsBox.getChildren().add(guessedWord.get(i).getPoint());
             point = point + guessedWord.get(i).getPoints();
         }
+
+        wordBox.setVisible(false);
+        pointsBox.setVisible(false);
 
         Label total = new Label("Total");
         total.setStyle("-fx-font-size: 12pt; -fx-font-family: \"Segoe UI Light\"; -fx-text-fill: white; -fx-opacity: 1; -fx-background-color: rgb(183, 187, 191)");

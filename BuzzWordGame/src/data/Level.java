@@ -40,7 +40,7 @@ public class Level {
 //        label = new Label("Level "+level);
 //        label.getStyleClass().setAll(propertyManager.getPropertyValue(HEADING_LABEL));
 //        label.setAlignment(Pos.CENTER);
-        remainingTime = 12*(level);
+        remainingTime = 150 - 15*(level);
 
         wordAmount = 2+ level;
 

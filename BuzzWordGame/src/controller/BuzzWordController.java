@@ -11,6 +11,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.effect.DropShadow;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -77,7 +78,7 @@ public class BuzzWordController implements FileController {
     private ArrayList<Word>  guessedWord;
     private ArrayList<Word>     wordSequenceToGuess;
     //private char[]                      wordchar;
-    private Set<String>         wordSequenceString;
+    private ArrayList<String>         wordSequenceString;
     private Set<Character>      guessingWord;
 
     private  WorkSpace          workSpace;
@@ -90,6 +91,7 @@ public class BuzzWordController implements FileController {
     private Level            currentLevel;
     private int             time;
     private Timer           countdownTimer;
+    private int                 point;
 
 
     public BuzzWordController(BuzzWord buzzWord){
@@ -116,6 +118,17 @@ public class BuzzWordController implements FileController {
     }
 
     private void end(){
+
+        Platform.runLater(()->{
+
+            if (success == true){
+                AppMessageDialogSingleton dialogSingleton = AppMessageDialogSingleton.getSingleton();
+                dialogSingleton.showEnd(propertyManager.getPropertyValue(WIN_LABEL_TITLE), propertyManager.getPropertyValue(WIN_LABEL_MESSAGE));
+            } else if (success == false){
+                AppMessageDialogSingleton dialogSingleton1 = AppMessageDialogSingleton.getSingleton();
+                dialogSingleton1.showEnd(propertyManager.getPropertyValue(LOST_LABEL_TITLE), propertyManager.getPropertyValue(LOST_LABEL_MESSAGE ));
+            }
+        });
 
     }
 
@@ -371,6 +384,48 @@ public class BuzzWordController implements FileController {
 
     }
 
+
+    private void updateLetters(){
+        startingLettersBox.getChildren().clear();
+
+        Text[] texts = new Text[2];
+        texts[0] = new Text(String.valueOf(wordSequenceString.get(0).charAt(0)));
+        texts[1] = new Text(String.valueOf(wordSequenceString.get(0).charAt(1)));
+        startingLettersBox.getChildren().add(texts[0]);
+        startingLettersBox.getChildren().add(texts[1]);
+
+        initializeLetters();
+    }
+
+    private void updateGuessed(){
+
+        wordBox.getChildren().clear();
+        pointsBox.getChildren().clear();
+
+        wordBox.setVisible(true);
+        pointsBox.setVisible(true);
+
+
+
+        for (int i = 0; i < guessedWord.size(); i++) {
+            wordBox.getChildren().add(guessedWord.get(i).getWord());
+            pointsBox.getChildren().add(guessedWord.get(i).getPoint());
+            //point = point + guessedWord.get(i).getPoints();
+        }
+
+        Label total = new Label("Total");
+        total.setStyle("-fx-font-size: 12pt; -fx-font-family: \"Segoe UI Light\"; -fx-text-fill: white; -fx-opacity: 1; -fx-background-color: rgb(183, 187, 191)");
+        Label totalPoints = new Label(String.valueOf(point));
+        totalPoints.setStyle("-fx-font-size: 12pt; -fx-font-family: \"Segoe UI Light\"; -fx-text-fill: white; -fx-opacity: 1; -fx-background-color: rgb(183, 187, 191)");
+
+        total.setAlignment(Pos.BOTTOM_CENTER);
+        totalPoints.setAlignment(Pos.BOTTOM_CENTER);
+        wordBox.getChildren().add(total);
+        pointsBox.getChildren().add(totalPoints);
+
+    }
+
+
     public void play(Level level) {
         workSpace.reinitializeAfterLevelSelection(level);
         currentLevel = level;
@@ -380,6 +435,7 @@ public class BuzzWordController implements FileController {
         targetPoint = workSpace.getTargetPoint();
         remainingTime = workSpace.getRemainingTime();
         guessedWord = workSpace.getGuessedWord();
+        guessedWord.clear();
         circles = workSpace.getCircles();
         textsWords = workSpace.getTextsWords();
         wordsSet = workSpace.getWordsSet();
@@ -387,9 +443,16 @@ public class BuzzWordController implements FileController {
         lines = workSpace.getLines();
         time = level.getRemainingTime();
         initializeLetters();
+        point = 0;
 
+        wordSequenceString = new ArrayList<>();
         for (int i=0; i< level.getWordAmount(); i++){
             wordSequenceString.add(wordSequenceToGuess.get(i).getWordvalue());
+        }
+
+
+        if (countdownTimer!=null){
+            countdownTimer.cancel();
         }
 
         countdownTimer = new Timer();
@@ -405,40 +468,327 @@ public class BuzzWordController implements FileController {
             }
         }, 1000,1000);
 
-        ArrayList<Integer> paths = new ArrayList<>();
+        ArrayList<ArrayList<Integer>> paths = new ArrayList<>();
+        ArrayList<ArrayList<Integer>> neighboursList = new ArrayList<>();
+        ArrayList<ArrayList<Character>>  guessingAttempts = new ArrayList<>();
 
-        AnimationTimer timer = new AnimationTimer() {
+        int[] count = new int[1];
+        count[0] = -1;
+
+
+        AnimationTimer anitimer = new AnimationTimer() {
 
             @Override
             public void handle(long now) {
                 buzzWord.getGUI().getPrimaryScene().setOnKeyTyped((KeyEvent event) -> {
+
                     char guess = event.getCharacter().charAt(0);
 
+                    if (guess == '\r'){   //event.getCode() == (KeyCode.ENTER)
+                        if (guessingAttempts.size() >= 1) {
+
+                            ArrayList<Character> guessing = new ArrayList<>();
+
+                            if (guessingAttempts.size() == 1){
+                                guessing = guessingAttempts.get(0);
+                            }else {
+                                for (int i = 0; i < guessingAttempts.size(); i++) {
+                                    for (int j = i + 1; j < guessingAttempts.size(); j++) {
+                                        if (guessingAttempts.get(i).size() >= guessingAttempts.get(j).size()) {
+                                            guessing = guessingAttempts.get(i);
+                                        } else {
+                                            guessing = guessingAttempts.get(j);
+                                        }
+                                    }
+                                }
+                            }
+
+
+                            String guessingTry = "";
+
+                            for (int i=0; i<guessing.size(); i++){
+                                guessingTry = guessingTry+guessing.get(i);
+                            }
+
+                            for (int i=0; i<circles.length; i++){
+                                deHighlight(circles[i]);
+                            }
+
+                            paths.clear();
+                            neighboursList.clear();
+                            guessingAttempts.clear();
+                            count[0] = -1;
+
+
+
+                            String string = wordSequenceString.get(0);
+                            string = string.toLowerCase();
+
+                            if (guessingTry.contains(string)){
+                                guessedWord.add(new Word(string));
+
+
+
+
+                                Word guessedWord = wordSequenceToGuess.get(0);
+                                wordSequenceToGuess.remove(0);
+                                wordSequenceToGuess.add(guessedWord);
+
+                                wordSequenceString = new ArrayList<>();
+                                for (int i=0; i< level.getWordAmount(); i++){
+                                    wordSequenceString.add(wordSequenceToGuess.get(i).getWordvalue());
+                                }
+
+                                updateLetters();
+
+                                point = point + guessedWord.getPoints();
+                                updateGuessed();
+
+                                if (point > level.getTargetPoint()){
+                                    success = true;
+                                    GameMode gameMode = level.getMode();
+                                    gameMode.setLevelPassed(gameMode.getLevelPassed()+1);
+
+                                }else {
+                                    success = false;
+                                }
+                            }
+
+                            if (time<=0 || success){
+                                stop();
+                            }
+
+
+
+
+
+                        }
+
+                    }
+
+
+                    count[0] = count[0]+1;
                     int index1;
                     int index2;
 
 
 
-                    if (isValidChar(guess)){
-                        ArrayList<Integer> indexes = indexesAtTextWord(guess);
 
+                    if (isValidChar(guess) && !alreadyTried(paths, guess) ){
+
+                        if (count[0] == 0) {
+                            ArrayList<Integer> indexes = indexesAtTextWord(guess);
+
+                            for (int i = 0; i < indexes.size(); i++) {
+                                hightlight(circles[indexes.get(i)]);
+                                //paths.get(i).add(indexes.get(i));
+
+                                ArrayList<Integer> indexI = new ArrayList<>();
+                                indexI.add(indexes.get(i));
+                                paths.add(indexI);
+
+
+                                ArrayList<Character> guessTry = new ArrayList<>();
+                                guessTry.add(Character.toLowerCase(textsWords[indexes.get(i)].getText().charAt(0)));
+
+                                //guessingWord.add(textsWords[indexes.get(i)].getText().charAt(0))
+                                guessingAttempts.add(guessTry);
+
+                                neighboursList.add(getNeighbour(indexes.get(i)));
+
+                            }
+                        } else {
+
+                            ArrayList<Integer> indexes = indexesAtTextWord(guess);
+                            indexes = excludeFromPath(paths, indexes);
+                            for (int i = 0; i < paths.size(); i++) {
+
+
+                                if (isNotConataining(neighboursList.get(i), indexes) ) {
+                                    // return true if neighboursList.get(i) doesn't contain any elements of indexes
+
+                                    for (int j = 0; j < paths.get(i).size(); j++) {
+                                        // deHighlight
+                                        deHighlight(circles[paths.get(i).get(j)]);
+//                                        neighboursList.remove(i);
+//                                        guessingAttempts.remove(i);
+//                                        paths.remove(i);
+
+
+//                                        j--;
+                                    }
+
+                                    neighboursList.get(i).clear();
+                                    guessingAttempts.get(i).clear();
+                                    paths.get(i).clear();
+
+//                                    i--; // remove will shift left. i-- will remain correct index after the i++.
+                                } else {
+                                    // if neighbourList.get(i) contains one or more elements from indexes;
+
+                                    // restrict the index within neighbourList.get(i)
+                                    ArrayList<Integer> neighbourTemp = neighboursList.get(i);
+                                    int occuranceCount = -1;
+
+
+                                    for (int indexesIndex = 0; indexesIndex < indexes.size(); indexesIndex++) {
+                                        if (neighbourTemp.contains(indexes.get(indexesIndex)) ) {
+                                            occuranceCount++;
+
+                                            if (occuranceCount == 0) {
+
+                                                // find where does it occurrence first!!
+
+
+                                                paths.get(i).add(indexes.get(indexesIndex));
+                                                guessingAttempts.get(i).add(Character.toLowerCase(textsWords[indexes.get(indexesIndex)].getText().charAt(0)));
+                                                neighboursList.set(i, getNeighbour(indexes.get(indexesIndex)));
+                                                hightlight(circles[indexes.get(indexesIndex)]);
+
+                                            } else if (occuranceCount > 1) {
+                                                hightlight(circles[indexes.get(i)]);
+                                                //paths.get(i).add(indexes.get(i));
+
+                                                ArrayList<Integer> indexI = new ArrayList<>();
+                                                indexI.add(indexes.get(i));
+                                                paths.add(indexI);
+
+
+                                                ArrayList<Character> guessTry = new ArrayList<>();
+                                                //guessTry.add(textsWords[indexes.get(i)].getText().charAt(0));
+                                                guessTry.add(Character.toLowerCase(textsWords[indexes.get(i)].getText().charAt(0)));
+
+                                                //guessingWord.add(textsWords[indexes.get(i)].getText().charAt(0))
+                                                guessingAttempts.add(guessTry);
+
+                                                neighboursList.add(getNeighbour(indexes.get(i)));
+                                            }
+
+
+                                        }
+                                        occuranceCount = -1;
+                                    }
+
+
+                                }
+
+
+                                if (areEmptyOrNull(paths, neighboursList, guessingAttempts)) {
+                                    count[0] = -1;
+                                    //break;
+                                }
+
+
+
+                            }
+                            if (areEmptyOrNull(paths, neighboursList, guessingAttempts)) {
+                                count[0] = -1;
+                                //break;
+                            }
+                        }
+
+
+
+                    }else {
+                        if (!alreadyTried(paths, guess) || !isValidChar(guess)) {
+                            for (int i = 0; i < paths.size(); i++) {
+                                dehighlightAll();
+                                paths.clear();
+                                neighboursList.clear();
+                                guessingAttempts.clear();
+                                count[0] = -1;
+                            }
+                        }
                     }
 
                 });
+
+                if (time<=0 || success){
+                    stop();
+                }
+            }
+
+            @Override
+            public void stop(){
+                super.stop();
+                end();
             }
         };
+
+        anitimer.start();
     }
 
-    private boolean alreadyTried(char c){
-        return false;
+
+    private void dehighlightAll(){
+        for (int i=0; i<circles.length; i++){
+            deHighlight(circles[i]);
+        }
+
     }
+
+    private boolean alreadyTried(ArrayList<ArrayList<Integer>>  path, char c){
+//        boolean tried = false;
+//        for (int i=0; i<guessingAttempts.size(); i++){
+//            if (guessingAttempts.get(i).contains(Character.toLowerCase(c))){
+//                tried = true;
+//                return tried;
+//            }
+//        }
+//
+//        return tried;
+
+        // if the index isnt appear in path, then it is not tried.
+
+
+        ArrayList<Integer> index = indexesAtTextWord(c);
+        boolean notTried = false;
+
+        if (path.size() == 0){
+            return false;
+        }
+
+        for (int i=0; i<path.size(); i++){
+            for (int j=0; j< index.size(); j++){
+                if (!path.get(i).contains(index.get(j))){
+                    notTried = true;
+                }
+            }
+        }
+
+        if (notTried){
+            return false;
+        }else {
+            return true;
+        }
+
+
+
+    }
+
+    private ArrayList<Integer> excludeFromPath(ArrayList<ArrayList<Integer>>  path, ArrayList<Integer> indexes){
+        for (int i=0; i<path.size(); i++){
+            for (int x=0; x<path.get(i).size(); x++){
+                for (int j=0; j<indexes.size(); j++){
+                    if (path.get(i).get(x) == indexes.get(j)){
+                        indexes.remove(j);
+                    }
+
+                }
+            }
+        }
+
+        return indexes;
+    }
+
+
 
 
 
     private boolean isValidChar(char c){
         boolean isValid = false;
         for (int i=0; i< textsWords.length; i++){
-            if (c == textsWords[i].getText().charAt(0)){
+            if (Character.toLowerCase(c) == Character.toLowerCase(textsWords[i].getText().charAt(0))){
+
                 isValid = true;
             }
         }
@@ -446,7 +796,37 @@ public class BuzzWordController implements FileController {
         return isValid;
     }
 
+    private boolean areEmptyOrNull(ArrayList<ArrayList<Integer>> paths, ArrayList<ArrayList<Integer>> neiList, ArrayList<ArrayList<Character>> guessing){
+        if (paths.isEmpty() && neiList.isEmpty() && guessing.isEmpty()){
+            return true;
+        }
 
+        boolean isEMpty = true;
+
+        for (int i=0; i<paths.size(); i++){
+            if (!paths.get(i).isEmpty()){
+                isEMpty = false;
+                return isEMpty;
+            }
+        }
+
+        for (int i=0; i<neiList.size(); i++){
+            if (!neiList.get(i).isEmpty()){
+                isEMpty = false;
+                return isEMpty;
+            }
+        }
+
+        for (int i=0; i<guessing.size(); i++){
+            if (!guessing.get(i).isEmpty()){
+                isEMpty = false;
+                return isEMpty;
+            }
+        }
+
+        return isEMpty;
+
+    }
 
 
     @Override
@@ -948,7 +1328,9 @@ public class BuzzWordController implements FileController {
         for (int i=0; i<text.length; i++){
             text[i].setVisible(false);
         }
-        countdownTimer.cancel();
+        if (countdownTimer != null) {
+            countdownTimer.cancel();
+        }
 
         pauseButton.setVisible(false);
         resumeButton.setVisible(true);
@@ -1033,6 +1415,8 @@ public class BuzzWordController implements FileController {
         return neighbours;
     }
 
+
+
     // test if tried contain all elements in neighbour.
     // return true is containsALL
     private boolean containsAll(ArrayList<Integer> neighbour, ArrayList<Integer> tried){
@@ -1047,6 +1431,26 @@ public class BuzzWordController implements FileController {
         return count == neighbour.size();
 
     }
+
+    private boolean hasCommonChar(ArrayList<Integer> neighbour){
+        for (int i=0; i<neighbour.size(); i++){
+
+
+            for (int j=i+1; j<neighbour.size(); j++) {
+                char first = textsWords[neighbour.get(i)].getText().charAt(0);
+                char second = textsWords[neighbour.get(j)].getText().charAt(0);
+
+                if (Character.toLowerCase(first) == Character.toLowerCase(second)){
+                    return true;
+                }
+
+            }
+
+        }
+
+        return false;
+    }
+
 
     private void updateTime(){
         if (time>0) {
@@ -1073,12 +1477,25 @@ public class BuzzWordController implements FileController {
         ArrayList<Integer> indexes = new ArrayList<>();
 
         for (int i=0; i<textsWords.length; i++){
-            if (c == textsWords[i].getText().charAt(0)){
+            if (Character.toLowerCase(c) == Character.toLowerCase(textsWords[i].getText().charAt(0))){
                 indexes.add(i);
             }
         }
 
         return indexes;
+    }
+
+    private boolean isNotConataining(ArrayList<Integer> neighbour, ArrayList<Integer> indexes){
+        // if neighbour contain's none elements of indexes; return true
+        boolean isNot = true;
+
+        for (int i=0; i<indexes.size(); i++){
+            if (neighbour.contains(indexes.get(i))){
+                isNot = false;
+            }
+        }
+
+        return isNot;
     }
 }
 

@@ -89,7 +89,7 @@ public class User implements AppDataComponent {
     }
 
     public byte[] getEncryptedPassword(String password, byte[] salt) throws NoSuchAlgorithmException,InvalidKeySpecException {
-        // these codes made reference to https://www.javacodegeeks.com/2012/05/secure-password-storage-donts-dos-and.html.
+
         String algorithm = "PBKDF2WithHmacSHA1";
         int derivedKeyLength = 160;
         int iterations = 20000;
@@ -105,20 +105,13 @@ public class User implements AppDataComponent {
         return salt;
     }
 
-    public boolean authenticate(String attemptedPassword, byte[] encryptedPassword, byte[] salt) throws NoSuchAlgorithmException, InvalidKeySpecException {
+    public boolean authenticate(String passWordTry, byte[] encryptedPassword, byte[] salt) throws NoSuchAlgorithmException, InvalidKeySpecException {
 
-        // Encrypt the clear-text password using the same salt that was used to
+        // Encrypt the clear-text password using the same salt that was used to encrypt the original password
+        byte[] encryptedAttemptedPw = getEncryptedPassword(passWordTry, salt);
 
-        // encrypt the original password
-        byte[] encryptedAttemptedPassword = getEncryptedPassword(attemptedPassword, salt);
-
-
-
-        // Authentication succeeds if encrypted password that the user entered
-
-        // is equal to the stored hash
-
-        return Arrays.equals(encryptedPassword, encryptedAttemptedPassword);
+        // Authentication succeeds if encrypted password that the user entered is equal to the stored hash
+        return Arrays.equals(encryptedPassword, encryptedAttemptedPw);
 
     }
 
