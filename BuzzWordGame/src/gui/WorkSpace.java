@@ -53,6 +53,7 @@ public class WorkSpace extends AppWorkspaceComponent{
     Button                  logoutButton;
     Button                  homeButton;
     Button                  startPlaying;
+    Button                  helpButton;
 
     MenuButton              selectMode;
 
@@ -89,7 +90,7 @@ public class WorkSpace extends AppWorkspaceComponent{
         selectMode = gui.getSelectModesButton();
         startPlaying     = gui.getStartGameButton();
         homeButton = gui.getHomeButton();
-
+        helpButton = gui.getHelpButton();
 
         bodyPane = gui.getAppPane();
         workBox = new VBox(10);
@@ -201,6 +202,7 @@ public class WorkSpace extends AppWorkspaceComponent{
         homeButton.setVisible(false);
         selectMode.setVisible(true);
         startPlaying.setVisible(true);
+        helpButton.setVisible(false);
 
     }
 
@@ -269,11 +271,13 @@ public class WorkSpace extends AppWorkspaceComponent{
         startAndPauseButtonBox.setAlignment(Pos.CENTER); // resume , pause
         startAndPauseButtonBox.getChildren().get(0).setVisible(false);
         startAndPauseButtonBox.getChildren().get(1).setVisible(true);
+        helpButton.setVisible(true);
 
         workBox.getChildren().set(2, level.getLabel());
         workBox.getChildren().get(3).setVisible(true);
 
         rightSide.setVisible(true);
+
 
 
         for (int i = 0; i < circles.length; i++) {
@@ -347,6 +351,8 @@ public class WorkSpace extends AppWorkspaceComponent{
         startingLettersBox = new HBox();
         guessedWordsBox = new HBox();
 
+
+
         wordBox = new VBox();
         wordBox.setSpacing(5);
         pointsBox = new VBox();
@@ -367,12 +373,13 @@ public class WorkSpace extends AppWorkspaceComponent{
         texts[1] = new Text(String.valueOf(wordchar[1]));
 
         rightSide.setSpacing(20);
-        remainingTime = new Label("TimeRemaining: " + level.getRemainingTime() + " seconds");
+        remainingTime = new Label("TimeRemaining: " +"\n"+ level.getRemainingTime() + " seconds");
         remainingTime.setStyle("-fx-font-size: 12pt; -fx-font-family: \"Segoe UI Light\"; -fx-text-fill: rgb(255, 132, 144); -fx-opacity: 1;");
         remainingTimeBox.getChildren().setAll(remainingTime);
 
         startingLettersBox.getChildren().add(texts[0]);
         startingLettersBox.getChildren().add(texts[1]);
+        startingLettersBox.setVisible(false);
 
         int point = 0;
 

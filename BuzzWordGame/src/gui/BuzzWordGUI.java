@@ -61,6 +61,7 @@ public class BuzzWordGUI extends AppGUI {
     Button                      loginButton;
     Button                      logoutButton;
     Button                      homeButton;
+    Button                      helpButton;
     MenuButton                  selectModesButton;
 
     MenuItem[]                  modesList;
@@ -102,6 +103,8 @@ public class BuzzWordGUI extends AppGUI {
         initSideButtons(newProfileButton, true);
         loginButton     = new Button(propertyManager.getPropertyValue(LOGIN));
         initSideButtons(loginButton, true);
+        helpButton      = new Button("Help");
+        initSideButtons(helpButton, false);
 
         logoutButton    = new Button();
         //logoutButton.setVisible(false);
@@ -133,7 +136,7 @@ public class BuzzWordGUI extends AppGUI {
         buttonlist = new VBox();
         //buttonlist = new TilePane(Orientation.VERTICAL);
 
-        buttonlist.getChildren().addAll(newProfileButton, loginButton, logoutButton, selectModesButton, startGameButton, homeButton);
+        buttonlist.getChildren().addAll(newProfileButton, loginButton, logoutButton, selectModesButton, startGameButton, homeButton, helpButton);
         buttonlist.setSpacing(10);
         //buttonlist.setVgap(10);
 
@@ -185,6 +188,7 @@ public class BuzzWordGUI extends AppGUI {
         resumeGameButton.setOnAction(event -> buzzWordController.handleResumeRequest());
         exitButton.setOnAction(event -> buzzWordController.handleExitRequest());
         startGameButton.setOnAction(event -> buzzWordController.handleQuickGameReuqest());
+        helpButton.setOnAction(event -> buzzWordController.handleHelpRequest());
 
     }
 
@@ -335,5 +339,9 @@ public class BuzzWordGUI extends AppGUI {
 
     public Button getPauseButton(){
         return pauseGameButton;
+    }
+
+    public Button getHelpButton() {
+        return helpButton;
     }
 }

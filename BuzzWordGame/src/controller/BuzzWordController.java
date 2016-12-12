@@ -85,6 +85,8 @@ public class BuzzWordController implements FileController {
 
     private  WorkSpace          workSpace;
 
+    private boolean             isHelped;
+
     HBox                    startingLettersBox;
     VBox                    wordBox;
     VBox                    pointsBox;
@@ -440,6 +442,7 @@ public class BuzzWordController implements FileController {
 
 
     public void play(Level level) {
+        isHelped = false;
         success = false;
         workSpace.reinitializeAfterLevelSelection(level);
         currentLevel = level;
@@ -1500,7 +1503,7 @@ public class BuzzWordController implements FileController {
     private void updateTime(){
         if (time>0) {
             time--;
-            remainingTime.setText("TimeRemaining: " + time + " seconds");
+            remainingTime.setText("TimeRemaining: "+"\n"+ time + " seconds");
         }
     }
 
@@ -1555,6 +1558,12 @@ public class BuzzWordController implements FileController {
 
     public void setWorkSpace(WorkSpace workSpace) {
         this.workSpace = workSpace;
+    }
+
+    public void handleHelpRequest() {
+
+        isHelped = !isHelped;
+        startingLettersBox.setVisible(isHelped);
     }
 }
 
